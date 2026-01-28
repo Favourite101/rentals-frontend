@@ -54,7 +54,7 @@ npm install
 ### 3. Configure environment variables
 Create a `.env` file in the root directory:
 ```env
-VITE_API_BASE_URL=http://localhost:8000/api/v1
+VITE_API_BASE_URL=https://rentals-backend-h8jj.onrender.com/api/v1
 VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_key_here
 ```
 
@@ -161,7 +161,7 @@ The application integrates with a FastAPI backend. All API endpoints are configu
 ### Base URL
 Configure in `.env`:
 ```
-VITE_API_BASE_URL=http://localhost:8000/api/v1
+VITE_API_BASE_URL=https://rentals-backend-h8jj.onrender.com/api/v1
 ```
 
 ### Authentication
