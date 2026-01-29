@@ -1,5 +1,5 @@
 import { api } from './axios';
-import { Equipment, Category, CreateEquipmentData, CreateCategoryData } from '@/types';
+import { Equipment, Category, CreateEquipmentData, CreateCategoryData, ImageUploadResponse } from '@/types';
 
 export const equipmentApi = {
   // Equipment endpoints
@@ -70,5 +70,24 @@ export const equipmentApi = {
 
   deleteCategory: async (id: number): Promise<void> => {
     await api.delete(`/equipment/categories/${id}`);
+  },
+
+  // Image upload endpoints
+  uploadImage: async (file: File): Promise<ImageUploadResponse> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await api.post<ImageUploadResponse>('/equipment/upload-image', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
+
+  uploadAndUpdateImage: async (equipmentId: number, file: File): Promise<Equipment> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await api.post<Equipment>(`/equipment/${equipmentId}/upload-image`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
   },
 };

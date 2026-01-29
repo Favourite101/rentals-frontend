@@ -1,5 +1,5 @@
 import { api } from './axios';
-import type { AuthResponse, LoginCredentials, RegisterData, User } from '@/types';
+import type { AuthResponse, LoginCredentials, RegisterData, User, ForgotPasswordData, ResetPasswordData } from '@/types';
 
 export const authApi = {
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
@@ -69,5 +69,15 @@ export const authApi = {
 
   deleteAccount: async (password: string): Promise<void> => {
     await api.delete('/auth/me', { data: { password } });
+  },
+
+  forgotPassword: async (data: ForgotPasswordData): Promise<{ message: string }> => {
+    const response = await api.post<{ message: string }>('/auth/forgot-password', data);
+    return response.data;
+  },
+
+  resetPassword: async (data: ResetPasswordData): Promise<{ message: string }> => {
+    const response = await api.post<{ message: string }>('/auth/reset-password', data);
+    return response.data;
   },
 };

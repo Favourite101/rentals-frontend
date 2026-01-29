@@ -1,5 +1,14 @@
 import { api } from './axios';
-import type { Booking, CreateBookingData, UpdateBookingStatusData, PaymentIntent, EquipmentAvailability } from '@/types';
+import type { 
+  Booking, 
+  CreateBookingData, 
+  UpdateBookingStatusData, 
+  PaymentIntent, 
+  EquipmentAvailability,
+  RefundRequest,
+  CreateRefundRequestData,
+  ProcessRefundData
+} from '@/types';
 
 export const bookingsApi = {
   create: async (data: CreateBookingData): Promise<Booking> => {
@@ -61,6 +70,38 @@ export const bookingsApi = {
       '/bookings/confirm-payment',
       { payment_intent_id: paymentIntentId, booking_id: bookingId }
     );
+    return response.data;
+  },
+
+  // Refund endpoints
+  requestRefund: async (data: CreateRefundRequestData): Promise<RefundRequest> => {
+    const response = await api.post<RefundRequest>('/bookings/refund-request', data);
+    return response.data;
+  },
+
+  getMyRefunds: async (): Promise<RefundRequest[]> => {
+    const response = await api.get<RefundRequest[]>('/bookings/my-refunds');
+    return response.data;
+  },
+
+  getRefundById: async (id: number): Promise<RefundRequest> => {
+    const response = await api.get<RefundRequest>(`/bookings/refund/${id}`);
+    return response.data;
+  },
+
+  // Admin refund endpoints
+  getAllRefunds: async (): Promise<RefundRequest[]> => {
+    const response = await api.get<RefundRequest[]>('/bookings/admin/refunds');
+    return response.data;
+  },
+
+  getPendingRefunds: async (): Promise<RefundRequest[]> => {
+    const response = await api.get<RefundRequest[]>('/bookings/admin/refunds/pending');
+    return response.data;
+  },
+
+  processRefund: async (id: number, data: ProcessRefundData): Promise<RefundRequest> => {
+    const response = await api.post<RefundRequest>(`/bookings/admin/refunds/${id}/process`, data);
     return response.data;
   },
 };

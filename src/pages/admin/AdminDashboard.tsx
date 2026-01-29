@@ -4,10 +4,11 @@ import { Link } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 import { equipmentApi } from '@/lib/api/equipment';
 import { bookingsApi } from '@/lib/api/bookings';
 import { QUERY_KEYS, ROUTES } from '@/constants';
-import { Package, Calendar, Layers } from 'lucide-react';
+import { Package, Calendar, Layers, Receipt } from 'lucide-react';
 
 export const AdminDashboard: React.FC = () => {
   const { data: equipment = [] } = useQuery({
@@ -18,6 +19,11 @@ export const AdminDashboard: React.FC = () => {
   const { data: bookings = [] } = useQuery({
     queryKey: [QUERY_KEYS.ALL_BOOKINGS],
     queryFn: bookingsApi.getAllBookings,
+  });
+
+  const { data: pendingRefunds = [] } = useQuery({
+    queryKey: [QUERY_KEYS.PENDING_REFUNDS],
+    queryFn: bookingsApi.getPendingRefunds,
   });
 
   return (
@@ -49,9 +55,21 @@ export const AdminDashboard: React.FC = () => {
               </div>
             </CardContent>
           </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Pending Refunds</p>
+                  <p className="text-3xl font-bold">{pendingRefunds.length}</p>
+                </div>
+                <Receipt className="h-8 w-8 text-amber-500" />
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <Link to={ROUTES.ADMIN_EQUIPMENT}>
             <Button className="w-full h-32 text-lg" variant="outline">
               <div className="flex flex-col items-center gap-2">
@@ -76,6 +94,20 @@ export const AdminDashboard: React.FC = () => {
                 <Calendar className="h-8 w-8" />
                 <span>Manage Bookings</span>
               </div>
+            </Button>
+          </Link>
+
+          <Link to={ROUTES.ADMIN_REFUNDS}>
+            <Button className="w-full h-32 text-lg relative" variant="outline">
+              <div className="flex flex-col items-center gap-2">
+                <Receipt className="h-8 w-8" />
+                <span>Manage Refunds</span>
+              </div>
+              {pendingRefunds.length > 0 && (
+                <Badge className="absolute top-2 right-2 bg-amber-500">
+                  {pendingRefunds.length}
+                </Badge>
+              )}
             </Button>
           </Link>
         </div>

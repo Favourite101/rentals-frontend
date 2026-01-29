@@ -109,3 +109,47 @@ export interface ChangePasswordData {
   current_password: string;
   new_password: string;
 }
+
+// Password Reset
+export interface ForgotPasswordData {
+  email: string;
+}
+
+export interface ResetPasswordData {
+  token: string;
+  new_password: string;
+}
+
+// Refund Types
+export type RefundStatus = 'pending' | 'approved' | 'rejected' | 'processed';
+
+export interface RefundRequest {
+  id: number;
+  booking_id: number;
+  user_id: number;
+  reason: string;
+  status: RefundStatus;
+  admin_notes: string | null;
+  refund_amount: number;
+  processed_at: string | null;
+  created_at: string;
+  updated_at: string;
+  booking: Booking;
+  user?: User;
+}
+
+export interface CreateRefundRequestData {
+  booking_id: number;
+  reason: string;
+}
+
+export interface ProcessRefundData {
+  approved: boolean;
+  admin_notes?: string;
+}
+
+// Image Upload
+export interface ImageUploadResponse {
+  url: string;
+  public_id: string;
+}

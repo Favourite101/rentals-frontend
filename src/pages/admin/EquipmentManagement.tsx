@@ -15,7 +15,7 @@ import { showToast } from '@/lib/hooks/useToast';
 import { handleApiError } from '@/lib/api/axios';
 import { QUERY_KEYS } from '@/constants';
 import { formatCurrency } from '@/lib/utils/formatters';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Upload, X } from 'lucide-react';
 import type { Equipment, CreateEquipmentData } from '@/types';
 
 const equipmentSchema = z.object({
@@ -34,6 +34,10 @@ export const EquipmentManagement: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [editingEquipment, setEditingEquipment] = React.useState<Equipment | null>(null);
   const [deleteConfirm, setDeleteConfirm] = React.useState<Equipment | null>(null);
+  const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
+  const [imagePreview, setImagePreview] = React.useState<string | null>(null);
+  const [isUploading, setIsUploading] = React.useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const { data: equipment = [], isLoading } = useQuery({
     queryKey: [QUERY_KEYS.EQUIPMENT_LIST],
@@ -68,6 +72,7 @@ export const EquipmentManagement: React.FC = () => {
         image_url: editingEquipment.image_url || '',
         is_available: editingEquipment.is_available,
       });
+      setImagePreview(editingEquipment.image_url || null);
     } else {
       reset({
         name: '',
@@ -77,8 +82,34 @@ export const EquipmentManagement: React.FC = () => {
         image_url: '',
         is_available: true,
       });
+      setImagePreview(null);
     }
+    setSelectedFile(null);
   }, [editingEquipment, reset]);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        showToast('Please select an image file', 'error');
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        showToast('Image must be less than 5MB', 'error');
+        return;
+      }
+      setSelectedFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const clearSelectedFile = () => {
+    setSelectedFile(null);
+    setImagePreview(editingEquipment?.image_url || null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   const createMutation = useMutation({
     mutationFn: (data: CreateEquipmentData) => equipmentApi.create(data),
@@ -130,13 +161,31 @@ export const EquipmentManagement: React.FC = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setEditingEquipment(null);
+    setSelectedFile(null);
+    setImagePreview(null);
     reset();
   };
 
-  const onSubmit = (data: EquipmentFormData) => {
+  const onSubmit = async (data: EquipmentFormData) => {
+    let imageUrl = data.image_url || '';
+
+    // Upload image if a new file is selected
+    if (selectedFile) {
+      setIsUploading(true);
+      try {
+        const uploadResult = await equipmentApi.uploadImage(selectedFile);
+        imageUrl = uploadResult.url;
+      } catch (error) {
+        showToast(handleApiError(error), 'error');
+        setIsUploading(false);
+        return;
+      }
+      setIsUploading(false);
+    }
+
     const equipmentData: CreateEquipmentData = {
       ...data,
-      image_url: data.image_url || '',
+      image_url: imageUrl,
     };
 
     if (editingEquipment) {
@@ -146,7 +195,7 @@ export const EquipmentManagement: React.FC = () => {
     }
   };
 
-  const isPending = createMutation.isPending || updateMutation.isPending;
+  const isPending = createMutation.isPending || updateMutation.isPending || isUploading;
 
   return (
     <Layout>
@@ -309,15 +358,65 @@ export const EquipmentManagement: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="image_url">Image URL</Label>
-                <Input
-                  id="image_url"
-                  {...register('image_url')}
-                  placeholder="https://example.com/image.jpg"
-                />
-                {errors.image_url && (
-                  <p className="text-sm text-red-600">{errors.image_url.message}</p>
-                )}
+                <Label htmlFor="image_url">Equipment Image</Label>
+                <div className="space-y-3">
+                  {/* Image Preview */}
+                  {imagePreview && (
+                    <div className="relative inline-block">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="w-32 h-32 object-cover rounded-lg border"
+                      />
+                      <button
+                        type="button"
+                        onClick={clearSelectedFile}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  )}
+                  
+                  {/* File Upload */}
+                  <div className="flex gap-2">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileSelect}
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="flex items-center gap-2"
+                    >
+                      <Upload className="h-4 w-4" />
+                      {selectedFile ? 'Change Image' : 'Upload Image'}
+                    </Button>
+                    {selectedFile && (
+                      <span className="text-sm text-gray-600 self-center">
+                        {selectedFile.name}
+                      </span>
+                    )}
+                  </div>
+                  
+                  {/* Or use URL */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-500">or paste URL:</span>
+                    <Input
+                      {...register('image_url')}
+                      placeholder="https://example.com/image.jpg"
+                      className="flex-1"
+                      disabled={!!selectedFile}
+                    />
+                  </div>
+                  {errors.image_url && (
+                    <p className="text-sm text-red-600">{errors.image_url.message}</p>
+                  )}
+                </div>
               </div>
             </div>
 

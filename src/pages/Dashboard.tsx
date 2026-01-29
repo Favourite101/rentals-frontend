@@ -1,28 +1,71 @@
 import * as React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { PageLoader } from '@/components/ui/Loader';
+import { Modal } from '@/components/ui/Modal';
+import { Label } from '@/components/ui/Label';
+import { PageLoader, Loader } from '@/components/ui/Loader';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { bookingsApi } from '@/lib/api/bookings';
+import { showToast } from '@/lib/hooks/useToast';
+import { handleApiError } from '@/lib/api/axios';
 import { formatCurrency, formatDate } from '@/lib/utils/formatters';
 import { QUERY_KEYS, ROUTES, BOOKING_STATUS_LABELS, BOOKING_STATUS_COLORS } from '@/constants';
-import { Package, Calendar, Clock, CheckCircle } from 'lucide-react';
+import { Package, Calendar, Clock, CheckCircle, Receipt } from 'lucide-react';
+import type { Booking } from '@/types';
 
 export const Dashboard: React.FC = () => {
+  const queryClient = useQueryClient();
+  
   const { data: bookings = [], isLoading } = useQuery({
     queryKey: [QUERY_KEYS.MY_BOOKINGS],
     queryFn: bookingsApi.getMyBookings,
   });
+
+  // Refund request state
+  const [refundBooking, setRefundBooking] = React.useState<Booking | null>(null);
+  const [refundReason, setRefundReason] = React.useState('');
 
   // Track which bookings have had "Book Again" clicked
   const [rebookedIds, setRebookedIds] = React.useState<Set<number>>(() => {
     const stored = localStorage.getItem('rebooked_bookings');
     return stored ? new Set(JSON.parse(stored)) : new Set();
   });
+
+  // Track which bookings have had refund requested
+  const [refundRequestedIds, setRefundRequestedIds] = React.useState<Set<number>>(() => {
+    const stored = localStorage.getItem('refund_requested_bookings');
+    return stored ? new Set(JSON.parse(stored)) : new Set();
+  });
+
+  const refundMutation = useMutation({
+    mutationFn: bookingsApi.requestRefund,
+    onSuccess: (_, variables) => {
+      const newRefundRequestedIds = new Set(refundRequestedIds);
+      newRefundRequestedIds.add(variables.booking_id);
+      setRefundRequestedIds(newRefundRequestedIds);
+      localStorage.setItem('refund_requested_bookings', JSON.stringify([...newRefundRequestedIds]));
+      
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.MY_BOOKINGS] });
+      showToast('Refund request submitted successfully!', 'success');
+      setRefundBooking(null);
+      setRefundReason('');
+    },
+    onError: (error) => {
+      showToast(handleApiError(error), 'error');
+    },
+  });
+
+  const handleRefundRequest = () => {
+    if (!refundBooking || refundReason.length < 10) return;
+    refundMutation.mutate({
+      booking_id: refundBooking.id,
+      reason: refundReason,
+    });
+  };
 
   const handleBookAgain = (bookingId: number) => {
     const newRebookedIds = new Set(rebookedIds);
@@ -101,11 +144,17 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="mb-8">
+        <div className="mb-8 flex gap-4">
           <Link to={ROUTES.EQUIPMENT}>
             <Button size="lg">
               <Package className="mr-2 h-5 w-5" />
               Browse Equipment
+            </Button>
+          </Link>
+          <Link to={ROUTES.MY_REFUNDS}>
+            <Button size="lg" variant="outline">
+              <Receipt className="mr-2 h-5 w-5" />
+              My Refund Requests
             </Button>
           </Link>
         </div>
@@ -150,6 +199,18 @@ export const Dashboard: React.FC = () => {
                             <Link to={`/booking/${booking.id}/payment`}>
                               <Button size="sm">Pay Now</Button>
                             </Link>
+                          )}
+                          {booking.status === 'confirmed' && !refundRequestedIds.has(booking.id) && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setRefundBooking(booking)}
+                            >
+                              Request Refund
+                            </Button>
+                          )}
+                          {booking.status === 'confirmed' && refundRequestedIds.has(booking.id) && (
+                            <span className="text-xs text-amber-600">Refund Requested</span>
                           )}
                           {booking.status === 'expired' && !rebookedIds.has(booking.id) && (
                             <div className="flex flex-col gap-1">
@@ -196,6 +257,80 @@ export const Dashboard: React.FC = () => {
             )}
           </CardContent>
         </Card>
+
+        {/* Refund Request Modal */}
+        <Modal
+          isOpen={!!refundBooking}
+          onClose={() => {
+            setRefundBooking(null);
+            setRefundReason('');
+          }}
+          title="Request Refund"
+          size="md"
+        >
+          {refundBooking && (
+            <div className="space-y-4">
+              <div className="bg-gray-50 rounded-lg p-4">
+                <p className="font-medium">{refundBooking.equipment.name}</p>
+                <p className="text-sm text-gray-600">
+                  {formatDate(refundBooking.start_date)} - {formatDate(refundBooking.end_date)}
+                </p>
+                <p className="text-lg font-semibold mt-2">
+                  Refund Amount: {formatCurrency(refundBooking.total_price)}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="refundReason">
+                  Reason for Refund <span className="text-red-500">*</span>
+                </Label>
+                <textarea
+                  id="refundReason"
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]"
+                  placeholder="Please explain why you are requesting a refund (minimum 10 characters)..."
+                  value={refundReason}
+                  onChange={(e) => setRefundReason(e.target.value)}
+                />
+                {refundReason.length > 0 && refundReason.length < 10 && (
+                  <p className="text-sm text-red-600">
+                    Reason must be at least 10 characters ({10 - refundReason.length} more needed)
+                  </p>
+                )}
+              </div>
+
+              <p className="text-sm text-gray-600">
+                Your refund request will be reviewed by our team. You'll be notified by email once it's processed.
+              </p>
+
+              <div className="flex gap-3 pt-4">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => {
+                    setRefundBooking(null);
+                    setRefundReason('');
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="flex-1"
+                  onClick={handleRefundRequest}
+                  disabled={refundReason.length < 10 || refundMutation.isPending}
+                >
+                  {refundMutation.isPending ? (
+                    <>
+                      <Loader size="sm" className="mr-2" />
+                      Submitting...
+                    </>
+                  ) : (
+                    'Submit Request'
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
+        </Modal>
       </div>
     </Layout>
   );
