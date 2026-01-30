@@ -128,14 +128,15 @@ export interface RefundRequest {
   booking_id: number;
   user_id: number;
   reason: string;
+  amount: number;
   status: RefundStatus;
   admin_notes: string | null;
-  refund_amount: number;
-  processed_at: string | null;
+  stripe_refund_id: string | null;
   created_at: string;
   updated_at: string;
+  processed_at: string | null;
   booking: Booking;
-  user?: User;
+  user: User;
 }
 
 export interface CreateRefundRequestData {
