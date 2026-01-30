@@ -82,7 +82,7 @@ export const MyRefunds: React.FC = () => {
                         </div>
                         <div className="flex items-center gap-2 text-gray-600">
                           <CreditCard className="h-4 w-4" />
-                          <span>Refund Amount: <strong className="text-primary">{formatCurrency(refund.refund_amount)}</strong></span>
+                          <span>Refund Amount: <strong className="text-primary">{formatCurrency(refund.amount)}</strong></span>
                         </div>
                       </div>
 
@@ -112,7 +112,7 @@ export const MyRefunds: React.FC = () => {
 
                     <div className="text-right">
                       <div className="text-2xl font-bold text-primary">
-                        {formatCurrency(refund.refund_amount)}
+                        {formatCurrency(refund.amount)}
                       </div>
                       <p className="text-xs text-gray-500">Refund Amount</p>
                     </div>

@@ -78,7 +78,7 @@ export const RefundManagement: React.FC = () => {
     processed: allRefunds.filter(r => r.status === 'processed').length,
     totalAmount: allRefunds
       .filter(r => r.status === 'processed')
-      .reduce((sum, r) => sum + r.refund_amount, 0),
+      .reduce((sum, r) => sum + r.amount, 0),
   }), [allRefunds]);
 
   return (
@@ -206,7 +206,7 @@ export const RefundManagement: React.FC = () => {
                         <td className="py-3 px-4 font-mono text-sm">#{refund.id}</td>
                         <td className="py-3 px-4">{refund.user?.name || 'N/A'}</td>
                         <td className="py-3 px-4">{refund.booking.equipment.name}</td>
-                        <td className="py-3 px-4 font-semibold">{formatCurrency(refund.refund_amount)}</td>
+                        <td className="py-3 px-4 font-semibold">{formatCurrency(refund.amount)}</td>
                         <td className="py-3 px-4">
                           <Badge className={REFUND_STATUS_COLORS[refund.status]}>
                             {REFUND_STATUS_LABELS[refund.status]}
@@ -314,7 +314,7 @@ export const RefundManagement: React.FC = () => {
                 <div>
                   <span className="text-gray-500">Refund Amount</span>
                   <p className="text-2xl font-bold text-primary">
-                    {formatCurrency(selectedRefund.refund_amount)}
+                    {formatCurrency(selectedRefund.amount)}
                   </p>
                 </div>
                 <div className="text-right">
@@ -377,7 +377,7 @@ export const RefundManagement: React.FC = () => {
             <div className="space-y-4">
               <p className="text-gray-600">
                 {processAction.approved
-                  ? `Are you sure you want to approve this refund of ${formatCurrency(processAction.refund.refund_amount)}? The amount will be refunded to the customer's original payment method.`
+                  ? `Are you sure you want to approve this refund of ${formatCurrency(processAction.refund.amount)}? The amount will be refunded to the customer's original payment method.`
                   : 'Are you sure you want to reject this refund request?'}
               </p>
 
