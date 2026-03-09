@@ -70,9 +70,9 @@ export const EquipmentCatalog: React.FC = () => {
       <div className="bg-gradient-to-br from-primary/5 via-white to-secondary/5 py-12">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h1 className="heading-lg mb-4">Equipment Catalog</h1>
+            <h1 className="heading-lg mb-4">Browse Items</h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Browse our comprehensive collection of quality equipment for your ministry
+              Find and borrow items from people in your community
             </p>
           </div>
 
@@ -83,7 +83,7 @@ export const EquipmentCatalog: React.FC = () => {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <Input
-                  placeholder="Search equipment..."
+                  placeholder="Search items..."
                   className="pl-10"
                   onChange={(e) => handleSearch(e.target.value)}
                 />
@@ -100,7 +100,7 @@ export const EquipmentCatalog: React.FC = () => {
                 <option value="">All Categories</option>
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
-                    {category.name}
+                    {category?.name}
                   </option>
                 ))}
               </select>
@@ -173,7 +173,7 @@ export const EquipmentCatalog: React.FC = () => {
           ) : (
             <EmptyState
               icon={Package}
-              title="No equipment found"
+              title="No items found"
               description="Try adjusting your filters or search query to find what you're looking for."
               action={
                 <Button

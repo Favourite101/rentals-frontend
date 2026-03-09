@@ -92,12 +92,11 @@ export const MyRefunds: React.FC = () => {
                         </p>
                       </div>
 
-                      {refund.admin_notes && (
-                        <div className={`rounded-lg p-3 ${
-                          refund.status === 'rejected' ? 'bg-red-50' : 'bg-blue-50'
-                        }`}>
+                      {refund.resolution_notes && (
+                        <div className={`rounded-lg p-3 ${refund.status === 'rejected' ? 'bg-red-50' : 'bg-blue-50'
+                          }`}>
                           <p className="text-sm">
-                            <strong>Admin Response:</strong> {refund.admin_notes}
+                            <strong>Admin Response:</strong> {refund.resolution_notes}
                           </p>
                         </div>
                       )}

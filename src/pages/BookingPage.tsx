@@ -24,15 +24,15 @@ import type { UnavailableDateRange } from '@/types';
 // Convert date ranges to individual blocked dates
 const getBlockedDates = (unavailableDates: UnavailableDateRange[]): Date[] => {
   const blockedDates: Date[] = [];
-  
+
   for (const range of unavailableDates) {
     const start = startOfDay(parseISO(range.start_date));
     const end = startOfDay(parseISO(range.end_date));
-    
+
     const daysInRange = eachDayOfInterval({ start, end });
     blockedDates.push(...daysInRange);
   }
-  
+
   return blockedDates;
 };
 
@@ -297,7 +297,7 @@ export const BookingPage: React.FC = () => {
 
                 <div>
                   <h3 className="font-semibold text-lg mb-1">{equipment.name}</h3>
-                  <p className="text-sm text-gray-600">{equipment.category.name}</p>
+                  <p className="text-sm text-gray-600">{equipment.category?.name}</p>
                 </div>
 
                 <div className="border-t pt-4 space-y-2">

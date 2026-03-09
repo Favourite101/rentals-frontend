@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, User, LogOut, LayoutDashboard, Package } from 'lucide-react';
+import { Menu, X, User, LogOut, LayoutDashboard, Package, PlusCircle, List } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { getCurrentUser, clearAuthData, isAuthenticated, isAdmin } from '@/lib/hooks/useAuth';
 import { ROUTES } from '@/constants';
@@ -26,7 +26,7 @@ export const Header: React.FC = () => {
           <Link to={ROUTES.HOME} className="flex items-center space-x-2">
             <Package className="h-8 w-8 text-primary" />
             <span className="text-xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
-              ChurchRent
+              Avaro Share
             </span>
           </Link>
 
@@ -36,17 +36,25 @@ export const Header: React.FC = () => {
               to={ROUTES.EQUIPMENT}
               className="text-sm font-medium text-gray-700 hover:text-primary transition-colors"
             >
-              Browse Equipment
+              Browse Items
             </Link>
             {authenticated ? (
               <>
+                {!adminUser && (
+                  <Link to={ROUTES.MY_LISTINGS}>
+                    <Button size="sm" variant="outline" className="gap-1">
+                      <PlusCircle className="h-4 w-4" />
+                      List an Item
+                    </Button>
+                  </Link>
+                )}
                 <Link
                   to={adminUser ? ROUTES.ADMIN_DASHBOARD : ROUTES.DASHBOARD}
                   className="text-sm font-medium text-gray-700 hover:text-primary transition-colors"
                 >
                   Dashboard
                 </Link>
-                
+
                 {/* User Menu */}
                 <div className="relative">
                   <button
@@ -58,7 +66,7 @@ export const Header: React.FC = () => {
                     </div>
                     <span className="text-sm font-medium">{user?.name}</span>
                   </button>
-                  
+
                   {userMenuOpen && (
                     <div className="absolute right-0 mt-2 w-48 rounded-lg bg-white shadow-lg border py-1">
                       <Link
@@ -77,6 +85,16 @@ export const Header: React.FC = () => {
                         <LayoutDashboard className="h-4 w-4" />
                         <span>Dashboard</span>
                       </Link>
+                      {!adminUser && (
+                        <Link
+                          to={ROUTES.MY_LISTINGS}
+                          className="flex items-center space-x-2 px-4 py-2 text-sm hover:bg-gray-100"
+                          onClick={() => setUserMenuOpen(false)}
+                        >
+                          <List className="h-4 w-4" />
+                          <span>My Listings</span>
+                        </Link>
+                      )}
                       <button
                         onClick={() => {
                           setUserMenuOpen(false);
@@ -122,7 +140,7 @@ export const Header: React.FC = () => {
               className="block py-2 text-sm font-medium text-gray-700 hover:text-primary"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Browse Equipment
+              Browse Items
             </Link>
             {authenticated ? (
               <>
@@ -133,6 +151,15 @@ export const Header: React.FC = () => {
                 >
                   Dashboard
                 </Link>
+                {!adminUser && (
+                  <Link
+                    to={ROUTES.MY_LISTINGS}
+                    className="block py-2 text-sm font-medium text-gray-700 hover:text-primary"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    My Listings
+                  </Link>
+                )}
                 <Link
                   to={ROUTES.PROFILE}
                   className="block py-2 text-sm font-medium text-gray-700 hover:text-primary"

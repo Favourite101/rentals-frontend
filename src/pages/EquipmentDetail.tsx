@@ -8,7 +8,7 @@ import { PageLoader } from '@/components/ui/Loader';
 import { equipmentApi } from '@/lib/api/equipment';
 import { QUERY_KEYS, ROUTES } from '@/constants';
 import { formatCurrency } from '@/lib/utils/formatters';
-import { Package, ArrowLeft, Calendar } from 'lucide-react';
+import { Package, ArrowLeft, Calendar, User as UserIcon, MapPin } from 'lucide-react';
 import { isAuthenticated, isAdmin } from '@/lib/hooks/useAuth';
 
 export const EquipmentDetail: React.FC = () => {
@@ -80,12 +80,32 @@ export const EquipmentDetail: React.FC = () => {
 
           {/* Details */}
           <div>
-            <div className="mb-4">
-              <Badge variant="outline">{equipment.category.name}</Badge>
+            <div className="mb-4 flex flex-wrap gap-2">
+              <Badge variant="outline">{equipment.category?.name}</Badge>
+              {equipment.condition && (
+                <Badge variant="secondary" className="bg-gray-100 text-gray-700 hover:bg-gray-200">
+                  {equipment.condition}
+                </Badge>
+              )}
             </div>
-            
+
             <h1 className="text-4xl font-bold mb-4">{equipment.name}</h1>
-            
+
+            <div className="mb-6 flex flex-wrap items-center gap-4 text-gray-600">
+              {equipment.owner && (
+                <div className="flex items-center">
+                  <UserIcon className="h-4 w-4 mr-1 text-gray-400" />
+                  <span>Listed by <span className="font-medium text-gray-900">{equipment.owner.name}</span></span>
+                </div>
+              )}
+              {equipment.location && (
+                <div className="flex items-center">
+                  <MapPin className="h-4 w-4 mr-1 text-gray-400" />
+                  <span>{equipment.location}</span>
+                </div>
+              )}
+            </div>
+
             <div className="mb-6">
               <Badge variant={equipment.is_available ? 'success' : 'destructive'}>
                 {equipment.is_available ? 'Available' : 'Unavailable'}
@@ -130,7 +150,7 @@ export const EquipmentDetail: React.FC = () => {
                   {equipment.is_available ? 'Book Now' : 'Currently Unavailable'}
                 </Button>
               )}
-              
+
               {!authenticated && equipment.is_available && (
                 <p className="text-sm text-gray-600">
                   Please log in to book this equipment
@@ -139,12 +159,12 @@ export const EquipmentDetail: React.FC = () => {
             </div>
 
             <div className="mt-12 p-6 bg-gray-50 rounded-xl">
-              <h3 className="font-semibold mb-3">Rental Information</h3>
+              <h3 className="font-semibold mb-3">Borrowing Information</h3>
               <ul className="space-y-2 text-sm text-gray-700">
-                <li>• Minimum rental period: 1 day</li>
-                <li>• Payment required at booking</li>
-                <li>• Collection arranged after confirmation</li>
-                <li>• Full refund for cancellations 48h+ before start date</li>
+                <li>• Minimum borrow period: 1 day</li>
+                <li>• Payment required at booking to secure the item</li>
+                <li>• Coordinate meetup with the owner via platform</li>
+                <li>• Both parties can cancel before the start date</li>
               </ul>
             </div>
           </div>

@@ -33,6 +33,16 @@ export const equipmentApi = {
     return response.data;
   },
 
+  getMyListings: async (): Promise<Equipment[]> => {
+    const response = await api.get<Equipment[]>('/equipment/my-listings');
+    return response.data;
+  },
+
+  getUserListings: async (userId: number): Promise<Equipment[]> => {
+    const response = await api.get<Equipment[]>(`/equipment/user/${userId}`);
+    return response.data;
+  },
+
   create: async (data: CreateEquipmentData): Promise<Equipment> => {
     const response = await api.post<Equipment>('/equipment/', data);
     return response.data;

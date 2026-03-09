@@ -14,12 +14,12 @@ import { showToast } from '@/lib/hooks/useToast';
 import { handleApiError } from '@/lib/api/axios';
 import { formatCurrency, formatDate } from '@/lib/utils/formatters';
 import { QUERY_KEYS, ROUTES, BOOKING_STATUS_LABELS, BOOKING_STATUS_COLORS } from '@/constants';
-import { Package, Calendar, Clock, CheckCircle, Receipt } from 'lucide-react';
+import { Package, Calendar, Clock, CheckCircle, Receipt, List, Bell } from 'lucide-react';
 import type { Booking } from '@/types';
 
 export const Dashboard: React.FC = () => {
   const queryClient = useQueryClient();
-  
+
   const { data: bookings = [], isLoading } = useQuery({
     queryKey: [QUERY_KEYS.MY_BOOKINGS],
     queryFn: bookingsApi.getMyBookings,
@@ -48,7 +48,7 @@ export const Dashboard: React.FC = () => {
       newRefundRequestedIds.add(variables.booking_id);
       setRefundRequestedIds(newRefundRequestedIds);
       localStorage.setItem('refund_requested_bookings', JSON.stringify([...newRefundRequestedIds]));
-      
+
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.MY_BOOKINGS] });
       showToast('Refund request submitted successfully!', 'success');
       setRefundBooking(null);
@@ -95,7 +95,7 @@ export const Dashboard: React.FC = () => {
       <div className="container-custom py-12">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-          <p className="text-gray-600">Manage your equipment bookings</p>
+          <p className="text-gray-600">Your borrowing activity</p>
         </div>
 
         {/* Stats */}
@@ -144,11 +144,23 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="mb-8 flex gap-4">
+        <div className="mb-8 flex flex-wrap gap-4">
           <Link to={ROUTES.EQUIPMENT}>
             <Button size="lg">
               <Package className="mr-2 h-5 w-5" />
-              Browse Equipment
+              Browse Items
+            </Button>
+          </Link>
+          <Link to={ROUTES.MY_LISTINGS}>
+            <Button size="lg" variant="outline">
+              <List className="mr-2 h-5 w-5" />
+              My Listings
+            </Button>
+          </Link>
+          <Link to={ROUTES.LENDING_REQUESTS}>
+            <Button size="lg" variant="outline">
+              <Bell className="mr-2 h-5 w-5" />
+              Lending Requests
             </Button>
           </Link>
           <Link to={ROUTES.MY_REFUNDS}>
@@ -182,7 +194,7 @@ export const Dashboard: React.FC = () => {
                       <tr key={booking.id} className="border-b last:border-0 hover:bg-gray-50">
                         <td className="py-3 px-4">
                           <div className="font-medium">{booking.equipment.name}</div>
-                          <div className="text-sm text-gray-600">{booking.equipment.category.name}</div>
+                          <div className="text-sm text-gray-600">{booking.equipment.category?.name}</div>
                         </td>
                         <td className="py-3 px-4 text-sm">
                           <div>{formatDate(booking.start_date)}</div>
@@ -215,7 +227,7 @@ export const Dashboard: React.FC = () => {
                           {booking.status === 'expired' && !rebookedIds.has(booking.id) && (
                             <div className="flex flex-col gap-1">
                               <span className="text-xs text-gray-500">Payment window expired</span>
-                              <Link 
+                              <Link
                                 to={`/equipment/${booking.equipment.slug}`}
                                 onClick={() => handleBookAgain(booking.id)}
                               >
@@ -227,7 +239,7 @@ export const Dashboard: React.FC = () => {
                             <span className="text-xs text-gray-500">Rebooked</span>
                           )}
                           {booking.status === 'cancelled' && !rebookedIds.has(booking.id) && (
-                            <Link 
+                            <Link
                               to={`/equipment/${booking.equipment.slug}`}
                               onClick={() => handleBookAgain(booking.id)}
                             >

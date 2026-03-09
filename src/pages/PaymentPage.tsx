@@ -31,7 +31,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ booking }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!stripe || !elements) {
       return;
     }
@@ -89,13 +89,13 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ booking }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="p-4 bg-gray-50 rounded-lg">
-        <PaymentElement 
+        <PaymentElement
           options={{
             layout: 'tabs',
           }}
         />
       </div>
-      
+
       <div className="flex items-center gap-2 text-sm text-gray-600">
         <Shield className="h-4 w-4" />
         <span>Your payment is secured with SSL encryption</span>
@@ -173,8 +173,8 @@ export const PaymentPage: React.FC = () => {
             {booking.status === 'confirmed' ? 'Booking Already Paid' : 'Booking Cancelled'}
           </h2>
           <p className="text-gray-600 mb-6">
-            {booking.status === 'confirmed' 
-              ? 'This booking has already been paid for.' 
+            {booking.status === 'confirmed'
+              ? 'This booking has already been paid for.'
               : 'This booking has been cancelled.'}
           </p>
           <Button onClick={() => navigate(ROUTES.DASHBOARD)}>Go to Dashboard</Button>
@@ -198,7 +198,7 @@ export const PaymentPage: React.FC = () => {
     <Layout>
       <div className="container-custom py-12">
         <h1 className="text-3xl font-bold mb-8">Complete Payment</h1>
-        
+
         <div className="grid gap-8 lg:grid-cols-2">
           {/* Booking Summary */}
           <Card>
@@ -211,8 +211,8 @@ export const PaymentPage: React.FC = () => {
             <CardContent className="space-y-4">
               <div className="flex items-start gap-4">
                 {booking.equipment.image_url ? (
-                  <img 
-                    src={booking.equipment.image_url} 
+                  <img
+                    src={booking.equipment.image_url}
                     alt={booking.equipment.name}
                     className="w-24 h-24 rounded-lg object-cover"
                   />
@@ -223,7 +223,7 @@ export const PaymentPage: React.FC = () => {
                 )}
                 <div>
                   <h3 className="font-semibold text-lg">{booking.equipment.name}</h3>
-                  <p className="text-sm text-gray-600">{booking.equipment.category.name}</p>
+                  <p className="text-sm text-gray-600">{booking.equipment.category?.name}</p>
                 </div>
               </div>
 
@@ -267,9 +267,9 @@ export const PaymentPage: React.FC = () => {
                   <Loader size="lg" />
                 </div>
               ) : createPaymentMutation.data?.client_secret ? (
-                <Elements 
-                  stripe={stripePromise} 
-                  options={{ 
+                <Elements
+                  stripe={stripePromise}
+                  options={{
                     clientSecret: createPaymentMutation.data.client_secret,
                     appearance: {
                       theme: 'stripe',
@@ -280,9 +280,9 @@ export const PaymentPage: React.FC = () => {
                     },
                   }}
                 >
-                  <CheckoutForm 
-                    booking={booking} 
-                    clientSecret={createPaymentMutation.data.client_secret} 
+                  <CheckoutForm
+                    booking={booking}
+                    clientSecret={createPaymentMutation.data.client_secret}
                   />
                 </Elements>
               ) : (

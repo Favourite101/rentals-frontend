@@ -19,7 +19,7 @@ export const RefundManagement: React.FC = () => {
   const queryClient = useQueryClient();
   const [selectedRefund, setSelectedRefund] = React.useState<RefundRequest | null>(null);
   const [processAction, setProcessAction] = React.useState<{ refund: RefundRequest; approved: boolean } | null>(null);
-  const [adminNotes, setAdminNotes] = React.useState('');
+  const [resolutionNotes, setResolutionNotes] = React.useState('');
   const [activeTab, setActiveTab] = React.useState<'pending' | 'all'>('pending');
 
   const { data: allRefunds = [], isLoading: loadingAll } = useQuery({
@@ -33,7 +33,7 @@ export const RefundManagement: React.FC = () => {
   });
 
   const processRefundMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: { approved: boolean; admin_notes?: string } }) =>
+    mutationFn: ({ id, data }: { id: number; data: { approved: boolean; resolution_notes?: string } }) =>
       bookingsApi.processRefund(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALL_REFUNDS] });
@@ -43,7 +43,7 @@ export const RefundManagement: React.FC = () => {
         'success'
       );
       setProcessAction(null);
-      setAdminNotes('');
+      setResolutionNotes('');
     },
     onError: (error) => {
       showToast(handleApiError(error), 'error');
@@ -52,7 +52,7 @@ export const RefundManagement: React.FC = () => {
 
   const handleProcess = (refund: RefundRequest, approved: boolean) => {
     setProcessAction({ refund, approved });
-    setAdminNotes('');
+    setResolutionNotes('');
   };
 
   const confirmProcess = () => {
@@ -61,7 +61,7 @@ export const RefundManagement: React.FC = () => {
         id: processAction.refund.id,
         data: {
           approved: processAction.approved,
-          admin_notes: adminNotes || undefined,
+          resolution_notes: resolutionNotes || undefined,
         },
       });
     }
@@ -323,13 +323,12 @@ export const RefundManagement: React.FC = () => {
                 </div>
               </div>
 
-              {selectedRefund.admin_notes && (
+              {selectedRefund.resolution_notes && (
                 <div className="border-t pt-4">
                   <h4 className="font-semibold mb-3">Admin Notes</h4>
-                  <div className={`rounded-lg p-4 ${
-                    selectedRefund.status === 'rejected' ? 'bg-red-50' : 'bg-blue-50'
-                  }`}>
-                    <p>{selectedRefund.admin_notes}</p>
+                  <div className={`rounded-lg p-4 ${selectedRefund.status === 'rejected' ? 'bg-red-50' : 'bg-blue-50'
+                    }`}>
+                    <p>{selectedRefund.resolution_notes}</p>
                   </div>
                 </div>
               )}
@@ -368,7 +367,7 @@ export const RefundManagement: React.FC = () => {
           isOpen={!!processAction}
           onClose={() => {
             setProcessAction(null);
-            setAdminNotes('');
+            setResolutionNotes('');
           }}
           title={processAction?.approved ? 'Approve Refund' : 'Reject Refund'}
           size="sm"
@@ -382,18 +381,18 @@ export const RefundManagement: React.FC = () => {
               </p>
 
               <div className="space-y-2">
-                <Label htmlFor="adminNotes">
+                <Label htmlFor="resolutionNotes">
                   {processAction.approved ? 'Notes (optional)' : 'Rejection Reason (recommended)'}
                 </Label>
                 <textarea
-                  id="adminNotes"
+                  id="resolutionNotes"
                   className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px]"
-                  placeholder={processAction.approved 
+                  placeholder={processAction.approved
                     ? 'Add any notes about this refund...'
                     : 'Explain why this refund is being rejected...'
                   }
-                  value={adminNotes}
-                  onChange={(e) => setAdminNotes(e.target.value)}
+                  value={resolutionNotes}
+                  onChange={(e) => setResolutionNotes(e.target.value)}
                 />
               </div>
 
@@ -403,7 +402,7 @@ export const RefundManagement: React.FC = () => {
                   className="flex-1"
                   onClick={() => {
                     setProcessAction(null);
-                    setAdminNotes('');
+                    setResolutionNotes('');
                   }}
                 >
                   Cancel

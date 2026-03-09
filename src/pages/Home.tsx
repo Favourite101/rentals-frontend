@@ -21,16 +21,16 @@ export const Home: React.FC = () => {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-primary via-blue-700 to-blue-900 text-white overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-20"></div>
-        
+
         <div className="container-custom section-padding relative z-10">
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
             <div className="text-center lg:text-left animate-fade-in-up">
               <h1 className="heading-xl mb-6 leading-tight">
-                Rent Quality Equipment for Your
-                <span className="block text-secondary"> Ministry</span>
+                Share, Lend, and Borrow Items in Your
+                <span className="block text-secondary"> Community</span>
               </h1>
               <p className="text-xl mb-8 text-blue-100 leading-relaxed max-w-2xl">
-                Supporting churches and ministries with affordable, reliable equipment rentals. From sound systems to projectors, we've got you covered.
+                Avaro Share is the ultimate peer-to-peer platform for sharing equipment, tools, and everyday items. Connect with others, lend what you don't use, and borrow what you need.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Link to={ROUTES.EQUIPMENT}>
@@ -46,17 +46,17 @@ export const Home: React.FC = () => {
                 </Link>
               </div>
             </div>
-            
+
             <div className="hidden lg:block animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-secondary/30 to-blue-500/30 blur-3xl"></div>
                 <div className="relative bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
                   <div className="grid grid-cols-2 gap-4">
                     {[
-                      { label: 'Equipment Items', value: '150+' },
-                      { label: 'Happy Churches', value: '500+' },
-                      { label: 'Total Bookings', value: '2,000+' },
-                      { label: 'Customer Rating', value: '4.9★' },
+                      { label: 'Items Listed', value: '150+' },
+                      { label: 'Active Users', value: '500+' },
+                      { label: 'Total Borrows', value: '2,000+' },
+                      { label: 'Community Rating', value: '4.9★' },
                     ].map((stat) => (
                       <div key={stat.label} className="text-center p-4 bg-white/5 rounded-xl">
                         <div className="text-3xl font-bold text-secondary mb-1">{stat.value}</div>
@@ -75,9 +75,9 @@ export const Home: React.FC = () => {
       <section className="section-padding bg-gray-50">
         <div className="container-custom">
           <div className="text-center mb-16">
-            <h2 className="heading-md mb-4">Why Choose ChurchRent?</h2>
+            <h2 className="heading-md mb-4">Why Choose Avaro Share?</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              We make equipment rental simple, affordable, and reliable for your ministry needs.
+              We make peer-to-peer sharing simple, secure, and rewarding for everyone in the community.
             </p>
           </div>
 
@@ -85,23 +85,23 @@ export const Home: React.FC = () => {
             {[
               {
                 icon: Zap,
-                title: 'Easy Booking',
-                description: 'Book equipment in minutes with our streamlined process.',
+                title: 'Instant Booking',
+                description: 'Borrow items instantly with our streamlined process. No long waits for approval.',
               },
               {
                 icon: Clock,
-                title: 'Flexible Rental',
-                description: 'Rent for a day, week, or month - whatever suits your event.',
+                title: 'Flexible Sharing',
+                description: 'Borrow for a day, week, or month. Lend your items whenever they are free.',
               },
               {
                 icon: Shield,
-                title: 'Quality Assured',
-                description: 'All equipment is tested and maintained to the highest standards.',
+                title: 'Secure Platform',
+                description: 'Built-in payments and verification to keep your items and transactions safe.',
               },
               {
                 icon: Check,
-                title: 'Great Support',
-                description: '24/7 customer support to help with any questions or issues.',
+                title: 'Community Driven',
+                description: 'Connect with neighbors, save money, and reduce waste by sharing resources.',
               },
             ].map((feature) => (
               <div
@@ -125,8 +125,8 @@ export const Home: React.FC = () => {
           <div className="container-custom">
             <div className="flex items-center justify-between mb-12">
               <div>
-                <h2 className="heading-md mb-2">Featured Equipment</h2>
-                <p className="text-gray-600">Explore our most popular rental items</p>
+                <h2 className="heading-md mb-2">Featured Items</h2>
+                <p className="text-gray-600">Explore popular items listed by the community</p>
               </div>
               <Link to={ROUTES.EQUIPMENT}>
                 <Button variant="outline">
@@ -159,18 +159,18 @@ export const Home: React.FC = () => {
             {[
               {
                 step: '01',
-                title: 'Browse Equipment',
-                description: 'Explore our catalog and find the perfect equipment for your needs.',
+                title: 'Find What You Need',
+                description: 'Explore the catalog and find the perfect item listed by someone nearby.',
               },
               {
                 step: '02',
-                title: 'Book & Pay',
-                description: 'Select your dates, complete the booking, and make a secure payment.',
+                title: 'Book Instantly',
+                description: 'Select your dates, complete the booking, and make a secure online payment.',
               },
               {
                 step: '03',
-                title: 'Collect & Use',
-                description: 'Pick up your equipment and use it for your event or service.',
+                title: 'Meet & Borrow',
+                description: 'Meet the lender, pick up your item, and return it when you are done!',
               },
             ].map((step, index) => (
               <div key={step.step} className="relative text-center">
@@ -191,9 +191,9 @@ export const Home: React.FC = () => {
       {/* CTA Section */}
       <section className="section-padding bg-gradient-to-r from-primary to-blue-700 text-white">
         <div className="container-custom text-center">
-          <h2 className="heading-lg mb-6">Ready to Get Started?</h2>
+          <h2 className="heading-lg mb-6">Ready to Join the Community?</h2>
           <p className="text-xl mb-8 text-blue-100 max-w-2xl mx-auto">
-            Join hundreds of churches and ministries already using ChurchRent for their equipment needs.
+            Join thousands of users already using Avaro Share to lend their gear and borrow what they need.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to={ROUTES.REGISTER}>
@@ -203,7 +203,7 @@ export const Home: React.FC = () => {
             </Link>
             <Link to={ROUTES.EQUIPMENT}>
               <Button size="lg" variant="outline" className="bg-white/10 border-white/30 hover:bg-white/20 text-white">
-                Browse Equipment
+                Browse Items
               </Button>
             </Link>
           </div>

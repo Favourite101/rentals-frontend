@@ -114,7 +114,8 @@ export const BookingManagement: React.FC = () => {
                     <tr className="border-b">
                       <th className="text-left py-3 px-4 font-semibold">ID</th>
                       <th className="text-left py-3 px-4 font-semibold">Equipment</th>
-                      <th className="text-left py-3 px-4 font-semibold">User</th>
+                      <th className="text-left py-3 px-4 font-semibold">Borrower</th>
+                      <th className="text-left py-3 px-4 font-semibold">Lender</th>
                       <th className="text-left py-3 px-4 font-semibold">Dates</th>
                       <th className="text-left py-3 px-4 font-semibold">Total</th>
                       <th className="text-left py-3 px-4 font-semibold">Status</th>
@@ -126,7 +127,8 @@ export const BookingManagement: React.FC = () => {
                       <tr key={booking.id} className="border-b hover:bg-gray-50">
                         <td className="py-3 px-4 font-mono text-sm">#{booking.id}</td>
                         <td className="py-3 px-4">{booking.equipment.name}</td>
-                        <td className="py-3 px-4">{booking.user?.name || 'N/A'}</td>
+                        <td className="py-3 px-4">{booking.borrower?.name || booking.user?.name || 'N/A'}</td>
+                        <td className="py-3 px-4">{booking.lender?.name || 'N/A'}</td>
                         <td className="py-3 px-4 text-sm">
                           {formatDate(booking.start_date)} - {formatDate(booking.end_date)}
                         </td>
@@ -200,21 +202,33 @@ export const BookingManagement: React.FC = () => {
                 </h4>
                 <div className="bg-gray-50 rounded-lg p-4">
                   <p className="font-medium">{selectedBooking.equipment.name}</p>
-                  <p className="text-sm text-gray-500">{selectedBooking.equipment.category.name}</p>
+                  <p className="text-sm text-gray-500">{selectedBooking.equipment.category?.name}</p>
                   <p className="text-sm mt-1">
                     Daily Rate: {formatCurrency(selectedBooking.equipment.daily_rate)}
                   </p>
                 </div>
               </div>
 
-              <div className="border-t pt-4">
-                <h4 className="font-semibold mb-3 flex items-center gap-2">
-                  <User className="h-4 w-4" />
-                  Customer
-                </h4>
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <p className="font-medium">{selectedBooking.user?.name || 'N/A'}</p>
-                  <p className="text-sm text-gray-500">{selectedBooking.user?.email || 'N/A'}</p>
+              <div className="border-t pt-4 grid grid-cols-2 gap-4">
+                <div>
+                  <h4 className="font-semibold mb-3 flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    Borrower
+                  </h4>
+                  <div className="bg-gray-50 rounded-lg p-4 h-full">
+                    <p className="font-medium">{selectedBooking.borrower?.name || selectedBooking.user?.name || 'N/A'}</p>
+                    <p className="text-sm text-gray-500">{selectedBooking.borrower?.email || selectedBooking.user?.email || 'N/A'}</p>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="font-semibold mb-3 flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    Lender
+                  </h4>
+                  <div className="bg-gray-50 rounded-lg p-4 h-full">
+                    <p className="font-medium">{selectedBooking.lender?.name || 'N/A'}</p>
+                    <p className="text-sm text-gray-500">{selectedBooking.lender?.email || 'N/A'}</p>
+                  </div>
                 </div>
               </div>
 

@@ -3,8 +3,14 @@ export interface User {
   name: string;
   username: string;
   email: string;
-  role: 'admin' | 'renter';
+  role: 'admin' | 'user';
   created_at: string;
+}
+
+export interface OwnerBrief {
+  id: number;
+  name: string;
+  username: string;
 }
 
 export interface Category {
@@ -22,13 +28,18 @@ export interface Equipment {
   daily_rate: number;
   image_url: string | null;
   is_available: boolean;
+  owner_id: number;
+  condition: string | null;
+  location: string | null;
   created_at: string;
   category: Category;
+  owner?: OwnerBrief;
 }
 
 export interface Booking {
   id: number;
-  user_id: number;
+  borrower_id: number;
+  lender_id: number;
   equipment_id: number;
   start_date: string;
   end_date: string;
@@ -38,6 +49,9 @@ export interface Booking {
   created_at: string;
   updated_at: string;
   equipment: Equipment;
+  borrower?: User;
+  lender?: User;
+  // backward compat alias
   user?: User;
 }
 
@@ -84,6 +98,8 @@ export interface CreateEquipmentData {
   daily_rate: number;
   image_url: string;
   is_available: boolean;
+  condition?: string;
+  location?: string;
 }
 
 export interface CreateBookingData {
@@ -130,7 +146,7 @@ export interface RefundRequest {
   reason: string;
   amount: number;
   status: RefundStatus;
-  admin_notes: string | null;
+  resolution_notes: string | null;
   stripe_refund_id: string | null;
   created_at: string;
   updated_at: string;
@@ -146,11 +162,27 @@ export interface CreateRefundRequestData {
 
 export interface ProcessRefundData {
   approved: boolean;
-  admin_notes?: string;
+  resolution_notes?: string;
 }
 
 // Image Upload
 export interface ImageUploadResponse {
   url: string;
   public_id: string;
+}
+
+// Admin Types
+export interface AdminUserUpdate {
+  name?: string;
+  email?: string;
+  role?: 'admin' | 'user';
+}
+
+export interface PlatformStats {
+  total_users: number;
+  total_listings: number;
+  total_bookings: number;
+  active_bookings: number;
+  total_revenue: number;
+  pending_refunds: number;
 }

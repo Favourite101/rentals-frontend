@@ -14,11 +14,13 @@ import { BookingPage } from './pages/BookingPage';
 import { PaymentPage } from './pages/PaymentPage';
 import { BookingSuccess } from './pages/BookingSuccess';
 import { Dashboard } from './pages/Dashboard';
+import { MyListings } from './pages/MyListings';
+import { LendingRequests } from './pages/LendingRequests';
 import { MyRefunds } from './pages/MyRefunds';
 import { Profile } from './pages/Profile';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
-import { EquipmentManagement } from './pages/admin/EquipmentManagement';
-import { CategoryManagement } from './pages/admin/CategoryManagement';
+import { UserManagement } from './pages/admin/UserManagement';
+import { ListingModeration } from './pages/admin/ListingModeration';
 import { BookingManagement } from './pages/admin/BookingManagement';
 import { RefundManagement } from './pages/admin/RefundManagement';
 
@@ -32,11 +34,11 @@ export const AppRoutes = () => {
       <Route path={ROUTES.RESET_PASSWORD} element={<ResetPassword />} />
       <Route path={ROUTES.EQUIPMENT} element={<EquipmentCatalog />} />
       <Route path={ROUTES.EQUIPMENT_DETAIL} element={<EquipmentDetail />} />
-      
+
       <Route
         path={ROUTES.EQUIPMENT_BOOK}
         element={
-          <ProtectedRoute renterOnly>
+          <ProtectedRoute userOnly>
             <BookingPage />
           </ProtectedRoute>
         }
@@ -44,7 +46,7 @@ export const AppRoutes = () => {
       <Route
         path={ROUTES.BOOKING_PAYMENT}
         element={
-          <ProtectedRoute renterOnly>
+          <ProtectedRoute userOnly>
             <PaymentPage />
           </ProtectedRoute>
         }
@@ -52,7 +54,7 @@ export const AppRoutes = () => {
       <Route
         path={ROUTES.BOOKING_SUCCESS}
         element={
-          <ProtectedRoute renterOnly>
+          <ProtectedRoute userOnly>
             <BookingSuccess />
           </ProtectedRoute>
         }
@@ -60,15 +62,31 @@ export const AppRoutes = () => {
       <Route
         path={ROUTES.DASHBOARD}
         element={
-          <ProtectedRoute renterOnly>
+          <ProtectedRoute userOnly>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={ROUTES.MY_LISTINGS}
+        element={
+          <ProtectedRoute userOnly>
+            <MyListings />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={ROUTES.LENDING_REQUESTS}
+        element={
+          <ProtectedRoute userOnly>
+            <LendingRequests />
           </ProtectedRoute>
         }
       />
       <Route
         path={ROUTES.MY_REFUNDS}
         element={
-          <ProtectedRoute renterOnly>
+          <ProtectedRoute userOnly>
             <MyRefunds />
           </ProtectedRoute>
         }
@@ -81,7 +99,7 @@ export const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-      
+
       <Route
         path={ROUTES.ADMIN_DASHBOARD}
         element={
@@ -91,18 +109,18 @@ export const AppRoutes = () => {
         }
       />
       <Route
-        path={ROUTES.ADMIN_EQUIPMENT}
+        path={ROUTES.ADMIN_USERS}
         element={
           <ProtectedRoute requireAdmin>
-            <EquipmentManagement />
+            <UserManagement />
           </ProtectedRoute>
         }
       />
       <Route
-        path={ROUTES.ADMIN_CATEGORIES}
+        path={ROUTES.ADMIN_LISTINGS}
         element={
           <ProtectedRoute requireAdmin>
-            <CategoryManagement />
+            <ListingModeration />
           </ProtectedRoute>
         }
       />

@@ -1,14 +1,16 @@
 import { api } from './axios';
-import type { 
-  Booking, 
-  CreateBookingData, 
-  UpdateBookingStatusData, 
-  PaymentIntent, 
+import type {
+  Booking,
+  CreateBookingData,
+  UpdateBookingStatusData,
+  PaymentIntent,
   EquipmentAvailability,
   RefundRequest,
   CreateRefundRequestData,
   ProcessRefundData
 } from '@/types';
+
+// NOTE: ProcessRefundData now uses resolution_notes instead of admin_notes
 
 export const bookingsApi = {
   create: async (data: CreateBookingData): Promise<Booking> => {
@@ -28,6 +30,11 @@ export const bookingsApi = {
 
   getAllBookings: async (): Promise<Booking[]> => {
     const response = await api.get<Booking[]>('/bookings/all');
+    return response.data;
+  },
+
+  getMyLendingRequests: async (): Promise<Booking[]> => {
+    const response = await api.get<Booking[]>('/bookings/my-lending-requests');
     return response.data;
   },
 

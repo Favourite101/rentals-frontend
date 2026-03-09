@@ -6,22 +6,22 @@ import { ROUTES } from '@/constants';
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requireAdmin?: boolean;
-  renterOnly?: boolean;
+  userOnly?: boolean;
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   requireAdmin = false,
-  renterOnly = false,
+  userOnly = false,
 }) => {
   const location = useLocation();
   const [, forceUpdate] = React.useReducer((x: number) => x + 1, 0);
-  
+
   // Subscribe to auth changes to trigger re-render
   React.useEffect(() => {
     return subscribeToAuth(forceUpdate);
   }, []);
-  
+
   const authenticated = isAuthenticated();
   const adminUser = isAdmin();
 
@@ -33,8 +33,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return <Navigate to={ROUTES.DASHBOARD} replace />;
   }
 
-  // Redirect admins away from renter-only pages (like booking, renter dashboard)
-  if (renterOnly && adminUser) {
+  // Redirect admins away from user-only pages (like booking, user dashboard)
+  if (userOnly && adminUser) {
     return <Navigate to={ROUTES.ADMIN_DASHBOARD} replace />;
   }
 

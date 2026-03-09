@@ -13,11 +13,11 @@ export const Footer: React.FC = () => {
             <div className="flex items-center space-x-2">
               <Package className="h-8 w-8 text-primary" />
               <span className="text-xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
-                ChurchRent
+                Avaro Share
               </span>
             </div>
             <p className="text-sm text-gray-600">
-              Providing quality equipment rentals to support your ministry and events.
+              Share, lend, and borrow items in your community. The peer-to-peer platform for everyone.
             </p>
           </div>
 
@@ -32,7 +32,7 @@ export const Footer: React.FC = () => {
                   to={ROUTES.EQUIPMENT}
                   className="text-sm text-gray-600 hover:text-primary transition-colors"
                 >
-                  Browse Equipment
+                  Browse Items
                 </Link>
               </li>
               <li>
@@ -95,7 +95,7 @@ export const Footer: React.FC = () => {
             <ul className="space-y-3">
               <li className="flex items-start space-x-2">
                 <Mail className="h-4 w-4 text-gray-600 mt-0.5" />
-                <span className="text-sm text-gray-600">support@churchrent.com</span>
+                <span className="text-sm text-gray-600">support@avaroshare.com</span>
               </li>
               <li className="flex items-start space-x-2">
                 <Phone className="h-4 w-4 text-gray-600 mt-0.5" />
@@ -111,7 +111,7 @@ export const Footer: React.FC = () => {
 
         <div className="mt-12 border-t pt-8">
           <p className="text-center text-sm text-gray-600">
-            © {new Date().getFullYear()} ChurchRent. All rights reserved.
+            © {new Date().getFullYear()} Avaro Share. All rights reserved.
           </p>
         </div>
       </div>
