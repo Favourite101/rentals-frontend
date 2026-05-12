@@ -13,6 +13,7 @@ import { handleApiError } from '@/lib/api/axios';
 import { formatCurrency, formatDate } from '@/lib/utils/formatters';
 import { QUERY_KEYS, ROUTES, STRIPE_PUBLISHABLE_KEY } from '@/constants';
 import { CreditCard, Calendar, Package, Shield } from 'lucide-react';
+import { BackButton } from '@/components/ui/BackButton';
 import type { Booking } from '@/types';
 
 // Initialize Stripe
@@ -197,7 +198,8 @@ export const PaymentPage: React.FC = () => {
   return (
     <Layout>
       <div className="container-custom py-12">
-        <h1 className="text-3xl font-bold mb-8">Complete Payment</h1>
+        <BackButton label="Back" />
+        <h1 className="text-3xl font-bold mb-6">Complete Payment</h1>
 
         <div className="grid gap-8 lg:grid-cols-2">
           {/* Booking Summary */}

@@ -72,8 +72,8 @@ export const bookingsApi = {
     return response.data;
   },
 
-  confirmPayment: async (paymentIntentId: string, bookingId: number): Promise<{ success: boolean; booking: Booking }> => {
-    const response = await api.post<{ success: boolean; booking: Booking }>(
+  confirmPayment: async (paymentIntentId: string, bookingId: number): Promise<Booking> => {
+    const response = await api.post<Booking>(
       '/bookings/confirm-payment',
       { payment_intent_id: paymentIntentId, booking_id: bookingId }
     );

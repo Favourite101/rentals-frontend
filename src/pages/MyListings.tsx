@@ -16,6 +16,8 @@ import { handleApiError } from '@/lib/api/axios';
 import { QUERY_KEYS } from '@/constants';
 import { formatCurrency } from '@/lib/utils/formatters';
 import { Plus, Pencil, Trash2, Upload, X, Package } from 'lucide-react';
+import { BackButton } from '@/components/ui/BackButton';
+import { ROUTES } from '@/constants';
 import type { Equipment, CreateEquipmentData } from '@/types';
 
 const equipmentSchema = z.object({
@@ -205,6 +207,7 @@ export const MyListings: React.FC = () => {
     return (
         <Layout>
             <div className="container-custom py-12">
+                <BackButton to={ROUTES.DASHBOARD} label="Back to Dashboard" />
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
                     <div>
                         <h1 className="text-3xl font-bold mb-2">My Listings</h1>

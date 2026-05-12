@@ -13,6 +13,8 @@ import { handleApiError } from '@/lib/api/axios';
 import { formatCurrency, formatDate } from '@/lib/utils/formatters';
 import { QUERY_KEYS, BOOKING_STATUS_LABELS, BOOKING_STATUS_COLORS } from '@/constants';
 import { Bell, Eye, X, User as UserIcon, Calendar, Package } from 'lucide-react';
+import { BackButton } from '@/components/ui/BackButton';
+import { ROUTES } from '@/constants';
 import type { Booking } from '@/types';
 
 export const LendingRequests: React.FC = () => {
@@ -23,10 +25,11 @@ export const LendingRequests: React.FC = () => {
     const { data: bookings = [], isLoading } = useQuery({
         queryKey: [QUERY_KEYS.LENDING_REQUESTS],
         queryFn: bookingsApi.getMyLendingRequests,
+        staleTime: 0,
     });
 
     const cancelMutation = useMutation({
-        mutationFn: (id: number) => bookingsApi.updateStatus(id, { status: 'cancelled' }),
+        mutationFn: (id: number) => bookingsApi.cancel(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.LENDING_REQUESTS] });
             showToast('Booking cancelled successfully!', 'success');
@@ -61,6 +64,7 @@ export const LendingRequests: React.FC = () => {
     return (
         <Layout>
             <div className="container-custom py-12">
+                <BackButton to={ROUTES.DASHBOARD} label="Back to Dashboard" />
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold mb-2">Lending Requests</h1>
                     <p className="text-gray-600">Track and manage bookings for items you are lending</p>
@@ -177,9 +181,12 @@ export const LendingRequests: React.FC = () => {
                                     <p className="text-sm text-gray-500">
                                         {selectedBooking.borrower?.email || selectedBooking.user?.email || 'N/A'}
                                     </p>
-                                    <p className="text-sm text-blue-600 mt-2 cursor-pointer hover:underline">
+                                    <a
+                                        href={`mailto:${selectedBooking.borrower?.email || selectedBooking.user?.email || ''}`}
+                                        className="text-sm text-blue-600 mt-2 hover:underline inline-block"
+                                    >
                                         Contact Borrower
-                                    </p>
+                                    </a>
                                 </div>
                             </div>
 
@@ -221,8 +228,8 @@ export const LendingRequests: React.FC = () => {
                                         variant="outline"
                                         className="text-red-600 border-red-200 hover:bg-red-50"
                                         onClick={() => {
-                                            setSelectedBooking(null);
                                             handleCancel(selectedBooking);
+                                            setSelectedBooking(null);
                                         }}
                                     >
                                         <X className="h-4 w-4 mr-2" />
@@ -243,9 +250,13 @@ export const LendingRequests: React.FC = () => {
                 >
                     <div className="space-y-4">
                         <p className="text-gray-600">
-                            Are you sure you want to cancel this booking for your <strong>{cancelAction?.equipment.name}</strong>?
-                            If the borrower has already paid, they will be automatically refunded.
+                            Are you sure you want to cancel this booking for <strong>{cancelAction?.equipment.name}</strong>?
                         </p>
+                        {cancelAction?.status === 'confirmed' && (
+                            <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">
+                                This booking has been paid. Cancelling will automatically issue a full refund to the borrower via Stripe.
+                            </p>
+                        )}
                         <div className="flex justify-end gap-3 pt-2">
                             <Button variant="outline" onClick={() => setCancelAction(null)}>
                                 Go Back

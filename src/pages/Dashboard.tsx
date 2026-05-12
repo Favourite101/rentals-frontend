@@ -13,43 +13,41 @@ import { bookingsApi } from '@/lib/api/bookings';
 import { showToast } from '@/lib/hooks/useToast';
 import { handleApiError } from '@/lib/api/axios';
 import { formatCurrency, formatDate } from '@/lib/utils/formatters';
-import { QUERY_KEYS, ROUTES, BOOKING_STATUS_LABELS, BOOKING_STATUS_COLORS } from '@/constants';
+import { QUERY_KEYS, ROUTES, BOOKING_STATUS_LABELS, BOOKING_STATUS_COLORS, REFUND_STATUS_LABELS, REFUND_STATUS_COLORS } from '@/constants';
 import { Package, Calendar, Clock, CheckCircle, Receipt, List, Bell } from 'lucide-react';
-import type { Booking } from '@/types';
+import type { Booking, RefundRequest } from '@/types';
 
 export const Dashboard: React.FC = () => {
   const queryClient = useQueryClient();
 
-  const { data: bookings = [], isLoading } = useQuery({
+  const { data: bookings = [], isLoading: bookingsLoading } = useQuery({
     queryKey: [QUERY_KEYS.MY_BOOKINGS],
     queryFn: bookingsApi.getMyBookings,
+    staleTime: 0,
   });
 
-  // Refund request state
+  const { data: refunds = [], isLoading: refundsLoading } = useQuery({
+    queryKey: [QUERY_KEYS.MY_REFUNDS],
+    queryFn: bookingsApi.getMyRefunds,
+    staleTime: 0,
+  });
+
+  // Refund request modal state
   const [refundBooking, setRefundBooking] = React.useState<Booking | null>(null);
   const [refundReason, setRefundReason] = React.useState('');
 
-  // Track which bookings have had "Book Again" clicked
-  const [rebookedIds, setRebookedIds] = React.useState<Set<number>>(() => {
-    const stored = localStorage.getItem('rebooked_bookings');
-    return stored ? new Set(JSON.parse(stored)) : new Set();
-  });
-
-  // Track which bookings have had refund requested
-  const [refundRequestedIds, setRefundRequestedIds] = React.useState<Set<number>>(() => {
-    const stored = localStorage.getItem('refund_requested_bookings');
-    return stored ? new Set(JSON.parse(stored)) : new Set();
-  });
+  // O(1) lookup: booking_id → refund request
+  const refundsByBookingId = React.useMemo(() => {
+    const map = new Map<number, RefundRequest>();
+    refunds.forEach(r => map.set(r.booking_id, r));
+    return map;
+  }, [refunds]);
 
   const refundMutation = useMutation({
     mutationFn: bookingsApi.requestRefund,
-    onSuccess: (_, variables) => {
-      const newRefundRequestedIds = new Set(refundRequestedIds);
-      newRefundRequestedIds.add(variables.booking_id);
-      setRefundRequestedIds(newRefundRequestedIds);
-      localStorage.setItem('refund_requested_bookings', JSON.stringify([...newRefundRequestedIds]));
-
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.MY_BOOKINGS] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.MY_REFUNDS] });
       showToast('Refund request submitted successfully!', 'success');
       setRefundBooking(null);
       setRefundReason('');
@@ -61,33 +59,17 @@ export const Dashboard: React.FC = () => {
 
   const handleRefundRequest = () => {
     if (!refundBooking || refundReason.length < 10) return;
-    refundMutation.mutate({
-      booking_id: refundBooking.id,
-      reason: refundReason,
-    });
+    refundMutation.mutate({ booking_id: refundBooking.id, reason: refundReason });
   };
 
-  const handleBookAgain = (bookingId: number) => {
-    const newRebookedIds = new Set(rebookedIds);
-    newRebookedIds.add(bookingId);
-    setRebookedIds(newRebookedIds);
-    localStorage.setItem('rebooked_bookings', JSON.stringify([...newRebookedIds]));
-  };
+  const stats = React.useMemo(() => ({
+    total: bookings.length,
+    active: bookings.filter(b => b.status === 'confirmed').length,
+    pending: bookings.filter(b => b.status === 'pending').length,
+  }), [bookings]);
 
-  const stats = React.useMemo(() => {
-    const total = bookings.length;
-    const active = bookings.filter(b => b.status === 'confirmed').length;
-    const pending = bookings.filter(b => b.status === 'pending').length;
-
-    return { total, active, pending };
-  }, [bookings]);
-
-  if (isLoading) {
-    return (
-      <Layout>
-        <PageLoader />
-      </Layout>
-    );
+  if (bookingsLoading || refundsLoading) {
+    return <Layout><PageLoader /></Layout>;
   }
 
   return (
@@ -203,52 +185,15 @@ export const Dashboard: React.FC = () => {
                         <td className="py-3 px-4 font-semibold">{formatCurrency(booking.total_price)}</td>
                         <td className="py-3 px-4">
                           <Badge className={BOOKING_STATUS_COLORS[booking.status]}>
-                            {BOOKING_STATUS_LABELS[booking.status]}
+                            {BOOKING_STATUS_LABELS[booking.status] ?? booking.status}
                           </Badge>
                         </td>
                         <td className="py-3 px-4">
-                          {booking.status === 'pending' && (
-                            <Link to={`/booking/${booking.id}/payment`}>
-                              <Button size="sm">Pay Now</Button>
-                            </Link>
-                          )}
-                          {booking.status === 'confirmed' && !refundRequestedIds.has(booking.id) && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => setRefundBooking(booking)}
-                            >
-                              Request Refund
-                            </Button>
-                          )}
-                          {booking.status === 'confirmed' && refundRequestedIds.has(booking.id) && (
-                            <span className="text-xs text-amber-600">Refund Requested</span>
-                          )}
-                          {booking.status === 'expired' && !rebookedIds.has(booking.id) && (
-                            <div className="flex flex-col gap-1">
-                              <span className="text-xs text-gray-500">Payment window expired</span>
-                              <Link
-                                to={`/equipment/${booking.equipment.slug}`}
-                                onClick={() => handleBookAgain(booking.id)}
-                              >
-                                <Button size="sm" variant="outline">Book Again</Button>
-                              </Link>
-                            </div>
-                          )}
-                          {booking.status === 'expired' && rebookedIds.has(booking.id) && (
-                            <span className="text-xs text-gray-500">Rebooked</span>
-                          )}
-                          {booking.status === 'cancelled' && !rebookedIds.has(booking.id) && (
-                            <Link
-                              to={`/equipment/${booking.equipment.slug}`}
-                              onClick={() => handleBookAgain(booking.id)}
-                            >
-                              <Button size="sm" variant="outline">Book Again</Button>
-                            </Link>
-                          )}
-                          {booking.status === 'cancelled' && rebookedIds.has(booking.id) && (
-                            <span className="text-xs text-gray-500">Rebooked</span>
-                          )}
+                          <BookingActions
+                            booking={booking}
+                            refund={refundsByBookingId.get(booking.id)}
+                            onRequestRefund={() => setRefundBooking(booking)}
+                          />
                         </td>
                       </tr>
                     ))}
@@ -259,7 +204,7 @@ export const Dashboard: React.FC = () => {
               <EmptyState
                 icon={Calendar}
                 title="No bookings yet"
-                description="Start by browsing our equipment catalog and make your first booking."
+                description="Start by browsing our catalog and make your first booking."
                 action={
                   <Link to={ROUTES.EQUIPMENT}>
                     <Button>Browse Equipment</Button>
@@ -273,10 +218,7 @@ export const Dashboard: React.FC = () => {
         {/* Refund Request Modal */}
         <Modal
           isOpen={!!refundBooking}
-          onClose={() => {
-            setRefundBooking(null);
-            setRefundReason('');
-          }}
+          onClose={() => { setRefundBooking(null); setRefundReason(''); }}
           title="Request Refund"
           size="md"
         >
@@ -285,7 +227,7 @@ export const Dashboard: React.FC = () => {
               <div className="bg-gray-50 rounded-lg p-4">
                 <p className="font-medium">{refundBooking.equipment.name}</p>
                 <p className="text-sm text-gray-600">
-                  {formatDate(refundBooking.start_date)} - {formatDate(refundBooking.end_date)}
+                  {formatDate(refundBooking.start_date)} – {formatDate(refundBooking.end_date)}
                 </p>
                 <p className="text-lg font-semibold mt-2">
                   Refund Amount: {formatCurrency(refundBooking.total_price)}
@@ -305,7 +247,7 @@ export const Dashboard: React.FC = () => {
                 />
                 {refundReason.length > 0 && refundReason.length < 10 && (
                   <p className="text-sm text-red-600">
-                    Reason must be at least 10 characters ({10 - refundReason.length} more needed)
+                    {10 - refundReason.length} more character{10 - refundReason.length !== 1 ? 's' : ''} needed
                   </p>
                 )}
               </div>
@@ -314,14 +256,11 @@ export const Dashboard: React.FC = () => {
                 Your refund request will be reviewed by our team. You'll be notified by email once it's processed.
               </p>
 
-              <div className="flex gap-3 pt-4">
+              <div className="flex gap-3 pt-2">
                 <Button
                   variant="outline"
                   className="flex-1"
-                  onClick={() => {
-                    setRefundBooking(null);
-                    setRefundReason('');
-                  }}
+                  onClick={() => { setRefundBooking(null); setRefundReason(''); }}
                 >
                   Cancel
                 </Button>
@@ -331,13 +270,8 @@ export const Dashboard: React.FC = () => {
                   disabled={refundReason.length < 10 || refundMutation.isPending}
                 >
                   {refundMutation.isPending ? (
-                    <>
-                      <Loader size="sm" className="mr-2" />
-                      Submitting...
-                    </>
-                  ) : (
-                    'Submit Request'
-                  )}
+                    <><Loader size="sm" className="mr-2" />Submitting...</>
+                  ) : 'Submit Request'}
                 </Button>
               </div>
             </div>
@@ -346,4 +280,58 @@ export const Dashboard: React.FC = () => {
       </div>
     </Layout>
   );
+};
+
+// ── Booking action cell ────────────────────────────────────────────────────────
+interface BookingActionsProps {
+  booking: Booking;
+  refund?: RefundRequest;
+  onRequestRefund: () => void;
+}
+
+const BookingActions: React.FC<BookingActionsProps> = ({ booking, refund, onRequestRefund }) => {
+  if (booking.status === 'pending') {
+    return (
+      <Link to={`/booking/${booking.id}/payment`}>
+        <Button size="sm">Pay Now</Button>
+      </Link>
+    );
+  }
+
+  if (booking.status === 'confirmed') {
+    // No refund, or previous refund was rejected → allow submission
+    if (!refund || refund.status === 'rejected') {
+      return (
+        <Button size="sm" variant="outline" onClick={onRequestRefund}>
+          Request Refund
+        </Button>
+      );
+    }
+    // Pending / approved / processed → show live status linking to My Refunds
+    return (
+      <Link to={ROUTES.MY_REFUNDS}>
+        <Badge className={`${REFUND_STATUS_COLORS[refund.status]} cursor-pointer`}>
+          {REFUND_STATUS_LABELS[refund.status]}
+        </Badge>
+      </Link>
+    );
+  }
+
+  if (booking.status === 'expired' || booking.status === 'cancelled') {
+    return (
+      <Link to={ROUTES.EQUIPMENT_DETAIL.replace(':slug', booking.equipment.slug)}>
+        <Button size="sm" variant="outline">Book Again</Button>
+      </Link>
+    );
+  }
+
+  if (booking.status === 'failed') {
+    return (
+      <Link to={`/booking/${booking.id}/payment`}>
+        <Button size="sm" variant="outline">Retry Payment</Button>
+      </Link>
+    );
+  }
+
+  return null;
 };

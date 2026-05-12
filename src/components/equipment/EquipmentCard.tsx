@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { formatCurrency } from '@/lib/utils/formatters';
 import { Package, MapPin, User as UserIcon } from 'lucide-react';
+import { ROUTES } from '@/constants';
 
 interface EquipmentCardProps {
   equipment: Equipment;
@@ -72,7 +73,7 @@ export const EquipmentCard: React.FC<EquipmentCardProps> = ({ equipment }) => {
       </CardContent>
 
       <CardFooter className="p-5 pt-0">
-        <Link to={`/equipment/${equipment.slug}`} className="w-full">
+        <Link to={ROUTES.EQUIPMENT_DETAIL.replace(':slug', equipment.slug)} className="w-full">
           <Button className="w-full" disabled={!equipment.is_available}>
             {equipment.is_available ? 'View Details' : 'Unavailable'}
           </Button>

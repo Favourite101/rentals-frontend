@@ -25,9 +25,9 @@ export const EquipmentDetail: React.FC = () => {
 
   const handleBook = () => {
     if (!authenticated) {
-      navigate(ROUTES.LOGIN, { state: { from: { pathname: `/equipment/${slug}/book` } } });
+      navigate(ROUTES.LOGIN, { state: { from: { pathname: ROUTES.EQUIPMENT_BOOK.replace(':slug', slug!) } } });
     } else {
-      navigate(`/equipment/${slug}/book`);
+      navigate(ROUTES.EQUIPMENT_BOOK.replace(':slug', slug!));
     }
   };
 
@@ -57,9 +57,9 @@ export const EquipmentDetail: React.FC = () => {
   return (
     <Layout>
       <div className="container-custom py-12">
-        <Link to={ROUTES.EQUIPMENT} className="inline-flex items-center text-primary hover:underline mb-8">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Equipment
+        <Link to={ROUTES.EQUIPMENT} className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-primary transition-colors mb-6">
+          <ArrowLeft className="h-4 w-4" />
+          Back to Browse
         </Link>
 
         <div className="grid gap-12 lg:grid-cols-2">

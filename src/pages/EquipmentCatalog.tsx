@@ -7,8 +7,9 @@ import { Button } from '@/components/ui/Button';
 import { PageLoader } from '@/components/ui/Loader';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { equipmentApi } from '@/lib/api/equipment';
-import { QUERY_KEYS } from '@/constants';
+import { QUERY_KEYS, ROUTES } from '@/constants';
 import { Search, Package, Filter } from 'lucide-react';
+import { BackButton } from '@/components/ui/BackButton';
 import { debounce } from '@/lib/utils/helpers';
 
 export const EquipmentCatalog: React.FC = () => {
@@ -69,6 +70,7 @@ export const EquipmentCatalog: React.FC = () => {
     <Layout>
       <div className="bg-gradient-to-br from-primary/5 via-white to-secondary/5 py-12">
         <div className="container-custom">
+          <BackButton to={ROUTES.DASHBOARD} label="Back to Dashboard" />
           <div className="text-center mb-12">
             <h1 className="heading-lg mb-4">Browse Items</h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">

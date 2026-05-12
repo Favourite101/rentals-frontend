@@ -18,6 +18,7 @@ import { showToast } from '@/lib/hooks/useToast';
 import { handleApiError } from '@/lib/api/axios';
 import { ROUTES } from '@/constants';
 import { User, Mail, Calendar, Shield, Pencil, Lock, Trash2, AlertTriangle } from 'lucide-react';
+import { BackButton } from '@/components/ui/BackButton';
 
 const profileSchema = z.object({
   name: z.string().min(1, 'Name is required').min(2, 'Name must be at least 2 characters'),
@@ -156,7 +157,8 @@ export const Profile: React.FC = () => {
   return (
     <Layout>
       <div className="container-custom py-12">
-        <h1 className="text-3xl font-bold mb-8">My Profile</h1>
+        <BackButton label="Back" />
+        <h1 className="text-3xl font-bold mb-6">My Profile</h1>
         
         <div className="max-w-2xl space-y-6">
           {/* Profile Information Card */}

@@ -19,6 +19,8 @@ import { bookingSchema, BookingFormData } from '@/lib/utils/validators';
 import { formatCurrency, calculateDays, calculateTotalPrice } from '@/lib/utils/formatters';
 import { QUERY_KEYS } from '@/constants';
 import { Package, Calendar } from 'lucide-react';
+import { BackButton } from '@/components/ui/BackButton';
+import { ROUTES } from '@/constants';
 import type { UnavailableDateRange } from '@/types';
 
 // Convert date ranges to individual blocked dates
@@ -143,7 +145,8 @@ export const BookingPage: React.FC = () => {
   return (
     <Layout>
       <div className="container-custom py-12">
-        <h1 className="text-3xl font-bold mb-8">Book Equipment</h1>
+        <BackButton to={ROUTES.EQUIPMENT_DETAIL.replace(':slug', slug!)} label="Back to Item" />
+        <h1 className="text-3xl font-bold mb-6">Book Item</h1>
 
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Booking Form */}
