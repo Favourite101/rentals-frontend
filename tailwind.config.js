@@ -81,8 +81,8 @@ export default {
         "slide-in": "slide-in 0.3s ease-out",
       },
       fontFamily: {
-        sans: ['Geist', 'system-ui', 'sans-serif'],
-        display: ['Cabinet Grotesk', 'system-ui', 'sans-serif'],
+        sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+        display: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
       },
     },
   },

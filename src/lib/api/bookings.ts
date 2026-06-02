@@ -3,14 +3,14 @@ import type {
   Booking,
   CreateBookingData,
   UpdateBookingStatusData,
-  PaymentIntent,
+  PaystackPaymentInit,
   EquipmentAvailability,
   RefundRequest,
   CreateRefundRequestData,
-  ProcessRefundData
+  ProcessRefundData,
+  PaginatedResponse,
+  NonReturnReport,
 } from '@/types';
-
-// NOTE: ProcessRefundData now uses resolution_notes instead of admin_notes
 
 export const bookingsApi = {
   create: async (data: CreateBookingData): Promise<Booking> => {
@@ -23,18 +23,24 @@ export const bookingsApi = {
     return response.data;
   },
 
-  getMyBookings: async (): Promise<Booking[]> => {
-    const response = await api.get<Booking[]>('/bookings/my-bookings');
+  getMyBookings: async (skip = 0, limit = 20): Promise<PaginatedResponse<Booking>> => {
+    const response = await api.get<PaginatedResponse<Booking>>('/bookings/my-bookings', {
+      params: { skip, limit },
+    });
     return response.data;
   },
 
-  getAllBookings: async (): Promise<Booking[]> => {
-    const response = await api.get<Booking[]>('/bookings/all');
+  getAllBookings: async (skip = 0, limit = 50): Promise<PaginatedResponse<Booking>> => {
+    const response = await api.get<PaginatedResponse<Booking>>('/bookings/all', {
+      params: { skip, limit },
+    });
     return response.data;
   },
 
-  getMyLendingRequests: async (): Promise<Booking[]> => {
-    const response = await api.get<Booking[]>('/bookings/my-lending-requests');
+  getMyLendingRequests: async (skip = 0, limit = 20): Promise<PaginatedResponse<Booking>> => {
+    const response = await api.get<PaginatedResponse<Booking>>('/bookings/my-lending-requests', {
+      params: { skip, limit },
+    });
     return response.data;
   },
 
@@ -67,15 +73,30 @@ export const bookingsApi = {
     return response.data;
   },
 
-  createPayment: async (bookingId: number): Promise<PaymentIntent> => {
-    const response = await api.post<PaymentIntent>(`/bookings/${bookingId}/create-payment`);
+  approve: async (id: number): Promise<Booking> => {
+    const response = await api.post<Booking>(`/bookings/${id}/approve`);
     return response.data;
   },
 
-  confirmPayment: async (paymentIntentId: string, bookingId: number): Promise<Booking> => {
+  decline: async (id: number): Promise<Booking> => {
+    const response = await api.post<Booking>(`/bookings/${id}/decline`);
+    return response.data;
+  },
+
+  reportNonReturn: async (id: number, notes?: string): Promise<NonReturnReport> => {
+    const response = await api.post<NonReturnReport>(`/bookings/${id}/report-non-return`, { notes });
+    return response.data;
+  },
+
+  createPayment: async (bookingId: number): Promise<PaystackPaymentInit> => {
+    const response = await api.post<PaystackPaymentInit>(`/bookings/${bookingId}/create-payment`);
+    return response.data;
+  },
+
+  confirmPayment: async (reference: string, bookingId: number): Promise<Booking> => {
     const response = await api.post<Booking>(
       '/bookings/confirm-payment',
-      { payment_intent_id: paymentIntentId, booking_id: bookingId }
+      { reference, booking_id: bookingId }
     );
     return response.data;
   },

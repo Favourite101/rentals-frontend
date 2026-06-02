@@ -18,10 +18,11 @@ export const UserManagement: React.FC = () => {
     const queryClient = useQueryClient();
     const [deleteConfirm, setDeleteConfirm] = React.useState<User | null>(null);
 
-    const { data: users = [], isLoading } = useQuery({
+    const { data: usersData, isLoading } = useQuery({
         queryKey: [QUERY_KEYS.ADMIN_USERS],
-        queryFn: adminApi.getUsers,
+        queryFn: () => adminApi.getUsers(0, 200),
     });
+    const users = usersData?.items ?? [];
 
     const deleteMutation = useMutation({
         mutationFn: (id: number) => adminApi.deleteUser(id),

@@ -19,10 +19,11 @@ export const BookingManagement: React.FC = () => {
   const [selectedBooking, setSelectedBooking] = React.useState<Booking | null>(null);
   const [statusAction, setStatusAction] = React.useState<{ booking: Booking; newStatus: 'confirmed' | 'cancelled' } | null>(null);
 
-  const { data: bookings = [], isLoading } = useQuery({
+  const { data: bookingsData, isLoading } = useQuery({
     queryKey: [QUERY_KEYS.ALL_BOOKINGS],
-    queryFn: bookingsApi.getAllBookings,
+    queryFn: () => bookingsApi.getAllBookings(0, 200),
   });
+  const bookings = bookingsData?.items ?? [];
 
   const updateStatusMutation = useMutation({
     mutationFn: ({ id, status }: { id: number; status: 'confirmed' | 'cancelled' }) =>

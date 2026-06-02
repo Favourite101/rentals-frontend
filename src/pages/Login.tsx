@@ -20,7 +20,7 @@ import { Package } from 'lucide-react';
 export const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const from = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname || ROUTES.DASHBOARD;
+  const from = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname || ROUTES.HOME;
 
   const {
     register,

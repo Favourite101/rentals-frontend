@@ -17,6 +17,13 @@ import { handleApiError } from '@/lib/api/axios';
 import { ROUTES } from '@/constants';
 import { Package } from 'lucide-react';
 
+const LAGOS_LGAS = [
+  'Agege', 'Ajeromi-Ifelodun', 'Alimosho', 'Amuwo-Odofin', 'Apapa',
+  'Badagry', 'Epe', 'Eti-Osa', 'Ibeju-Lekki', 'Ifako-Ijaiye',
+  'Ikeja', 'Ikorodu', 'Kosofe', 'Lagos Island', 'Lagos Mainland',
+  'Mushin', 'Ojo', 'Oshodi-Isolo', 'Somolu', 'Surulere',
+];
+
 export const Register: React.FC = () => {
   const navigate = useNavigate();
 
@@ -32,8 +39,8 @@ export const Register: React.FC = () => {
     mutationFn: authApi.register,
     onSuccess: (data) => {
       setAuthData(data.user, data.access_token);
-      showToast('Registration successful! Welcome to ChurchRent.', 'success');
-      navigate(ROUTES.DASHBOARD);
+      showToast('Welcome to atlo! Your account is ready.', 'success');
+      navigate(ROUTES.HOME);
     },
     onError: (error) => {
       showToast(handleApiError(error), 'error');
@@ -54,7 +61,7 @@ export const Register: React.FC = () => {
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
               <Package className="h-8 w-8 text-primary" />
             </div>
-            <h1 className="text-3xl font-bold mb-2">Join ChurchRent</h1>
+            <h1 className="text-3xl font-bold mb-2">Join atlo</h1>
             <p className="text-gray-600">Create your account to get started</p>
           </div>
 
@@ -104,6 +111,24 @@ export const Register: React.FC = () => {
                   />
                   {errors.email && (
                     <p className="text-sm text-red-600">{errors.email.message}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="location">Your LGA in Lagos</Label>
+                  <select
+                    id="location"
+                    {...register('location')}
+                    disabled={registerMutation.isPending}
+                    className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary disabled:opacity-50"
+                  >
+                    <option value="">Select your LGA</option>
+                    {LAGOS_LGAS.map(lga => (
+                      <option key={lga} value={lga}>{lga}</option>
+                    ))}
+                  </select>
+                  {errors.location && (
+                    <p className="text-sm text-red-600">{errors.location.message}</p>
                   )}
                 </div>
 

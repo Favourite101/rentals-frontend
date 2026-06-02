@@ -1,120 +1,108 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Phone, MapPin, Package } from 'lucide-react';
+import { Twitter, Instagram, Facebook } from 'lucide-react';
 import { ROUTES } from '@/constants';
+
+const LogoMark: React.FC = () => (
+  <svg width="14" height="18" viewBox="0 0 18 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0 22L9 0l9 22H0z" fill="currentColor" />
+    <path d="M5 22l4-9 4 9H5z" fill="white" fillOpacity="0.35" />
+  </svg>
+);
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="border-t bg-gray-50">
-      <div className="container-custom section-padding">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
+    <footer className="border-t border-gray-100 bg-white">
+      <div className="container-custom py-12">
+
+        {/* Top: brand + columns */}
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-6">
+
           {/* Brand */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <Package className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
-                Avaro Share
-              </span>
-            </div>
-            <p className="text-sm text-gray-600">
-              Share, lend, and borrow items in your community. The peer-to-peer platform for everyone.
+          <div className="col-span-2 space-y-4">
+            <Link to={ROUTES.HOME} className="flex items-center gap-2 text-primary">
+              <LogoMark />
+              <span className="text-[16px] font-semibold text-gray-900 tracking-tight">atlo</span>
+            </Link>
+            <p className="text-sm text-gray-500 leading-relaxed max-w-[220px]">
+              Access what you need. Earn from what you own.
             </p>
+            <div className="flex items-center gap-3">
+              <a href="#" aria-label="Twitter" className="text-gray-400 hover:text-gray-600 transition-colors">
+                <Twitter className="h-4 w-4" />
+              </a>
+              <a href="#" aria-label="Instagram" className="text-gray-400 hover:text-gray-600 transition-colors">
+                <Instagram className="h-4 w-4" />
+              </a>
+              <a href="#" aria-label="Facebook" className="text-gray-400 hover:text-gray-600 transition-colors">
+                <Facebook className="h-4 w-4" />
+              </a>
+            </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Product */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900">
-              Quick Links
-            </h3>
+            <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-gray-900">Product</h3>
             <ul className="space-y-3">
-              <li>
-                <Link
-                  to={ROUTES.EQUIPMENT}
-                  className="text-sm text-gray-600 hover:text-primary transition-colors"
-                >
-                  Browse Items
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to={ROUTES.DASHBOARD}
-                  className="text-sm text-gray-600 hover:text-primary transition-colors"
-                >
-                  Dashboard
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to={ROUTES.HOME}
-                  className="text-sm text-gray-600 hover:text-primary transition-colors"
-                >
-                  How It Works
-                </Link>
-              </li>
+              <FooterLink to={ROUTES.EQUIPMENT} label="Categories" />
+              <FooterLink to={ROUTES.EQUIPMENT} label="Browse items" />
+              <FooterLink to={ROUTES.HOME} label="For business" />
+              <FooterLink to={ROUTES.HOME} label="Community" />
             </ul>
           </div>
 
-          {/* Support */}
+          {/* Safety */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900">
-              Support
-            </h3>
+            <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-gray-900">Safety</h3>
             <ul className="space-y-3">
-              <li>
-                <a
-                  href="#"
-                  className="text-sm text-gray-600 hover:text-primary transition-colors"
-                >
-                  Help Center
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-sm text-gray-600 hover:text-primary transition-colors"
-                >
-                  Terms of Service
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-sm text-gray-600 hover:text-primary transition-colors"
-                >
-                  Privacy Policy
-                </a>
-              </li>
+              <FooterLink to={ROUTES.HOME} label="Trust & safety" />
+              <FooterLink to={ROUTES.HOME} label="Secure payments" />
+              <FooterLink to={ROUTES.HOME} label="Damage protection" />
+              <FooterLink to={ROUTES.PRIVACY} label="Privacy policy" />
             </ul>
           </div>
 
-          {/* Contact */}
+          {/* Hosting */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900">
-              Contact
-            </h3>
+            <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-gray-900">Hosting</h3>
             <ul className="space-y-3">
-              <li className="flex items-start space-x-2">
-                <Mail className="h-4 w-4 text-gray-600 mt-0.5" />
-                <span className="text-sm text-gray-600">support@avaroshare.com</span>
-              </li>
-              <li className="flex items-start space-x-2">
-                <Phone className="h-4 w-4 text-gray-600 mt-0.5" />
-                <span className="text-sm text-gray-600">+44 20 1234 5678</span>
-              </li>
-              <li className="flex items-start space-x-2">
-                <MapPin className="h-4 w-4 text-gray-600 mt-0.5" />
-                <span className="text-sm text-gray-600">London, United Kingdom</span>
-              </li>
+              <FooterLink to={ROUTES.MY_LISTINGS} label="Become a host" />
+              <FooterLink to={ROUTES.MY_LISTINGS} label="Host resources" />
+              <FooterLink to={ROUTES.LENDING_REQUESTS} label="Earnings" />
+              <FooterLink to={ROUTES.HOME} label="Community tips" />
+            </ul>
+          </div>
+
+          {/* Help */}
+          <div>
+            <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-gray-900">Help</h3>
+            <ul className="space-y-3">
+              <FooterLink to={ROUTES.HOME} label="Help centre" />
+              <FooterLink to={ROUTES.HOME} label="Contact us" />
+              <FooterLink to={ROUTES.HOME} label="Report an issue" />
             </ul>
           </div>
         </div>
 
-        <div className="mt-12 border-t pt-8">
-          <p className="text-center text-sm text-gray-600">
-            © {new Date().getFullYear()} Avaro Share. All rights reserved.
+        {/* Bottom bar */}
+        <div className="mt-10 border-t border-gray-100 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-xs text-gray-400">
+            © {new Date().getFullYear()} atlo Technologies Ltd. All rights reserved.
           </p>
+          <div className="flex items-center gap-4">
+            <Link to={ROUTES.TERMS} className="text-xs text-gray-400 hover:text-gray-600 transition-colors">Terms of service</Link>
+            <Link to={ROUTES.PRIVACY} className="text-xs text-gray-400 hover:text-gray-600 transition-colors">Privacy</Link>
+          </div>
         </div>
       </div>
     </footer>
   );
 };
+
+const FooterLink: React.FC<{ to: string; label: string }> = ({ to, label }) => (
+  <li>
+    <Link to={to} className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+      {label}
+    </Link>
+  </li>
+);

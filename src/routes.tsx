@@ -17,12 +17,18 @@ import { Dashboard } from './pages/Dashboard';
 import { MyListings } from './pages/MyListings';
 import { LendingRequests } from './pages/LendingRequests';
 import { MyRefunds } from './pages/MyRefunds';
+import { MyWishlist } from './pages/MyWishlist';
 import { Profile } from './pages/Profile';
+import { TermsOfService } from './pages/TermsOfService';
+import { PrivacyPolicy } from './pages/PrivacyPolicy';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { UserManagement } from './pages/admin/UserManagement';
 import { ListingModeration } from './pages/admin/ListingModeration';
+import { ListingApproval } from './pages/admin/ListingApproval';
 import { BookingManagement } from './pages/admin/BookingManagement';
 import { RefundManagement } from './pages/admin/RefundManagement';
+import { NonReturnReports } from './pages/admin/NonReturnReports';
+import { Payouts } from './pages/admin/Payouts';
 
 export const AppRoutes = () => {
   return (
@@ -34,6 +40,8 @@ export const AppRoutes = () => {
       <Route path={ROUTES.RESET_PASSWORD} element={<ResetPassword />} />
       <Route path={ROUTES.EQUIPMENT} element={<EquipmentCatalog />} />
       <Route path={ROUTES.EQUIPMENT_DETAIL} element={<EquipmentDetail />} />
+      <Route path={ROUTES.TERMS} element={<TermsOfService />} />
+      <Route path={ROUTES.PRIVACY} element={<PrivacyPolicy />} />
 
       <Route
         path={ROUTES.EQUIPMENT_BOOK}
@@ -92,6 +100,14 @@ export const AppRoutes = () => {
         }
       />
       <Route
+        path={ROUTES.MY_WISHLIST}
+        element={
+          <ProtectedRoute userOnly>
+            <MyWishlist />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path={ROUTES.PROFILE}
         element={
           <ProtectedRoute>
@@ -125,6 +141,14 @@ export const AppRoutes = () => {
         }
       />
       <Route
+        path={ROUTES.ADMIN_LISTING_APPROVAL}
+        element={
+          <ProtectedRoute requireAdmin>
+            <ListingApproval />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path={ROUTES.ADMIN_BOOKINGS}
         element={
           <ProtectedRoute requireAdmin>
@@ -137,6 +161,22 @@ export const AppRoutes = () => {
         element={
           <ProtectedRoute requireAdmin>
             <RefundManagement />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={ROUTES.ADMIN_NON_RETURN_REPORTS}
+        element={
+          <ProtectedRoute requireAdmin>
+            <NonReturnReports />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={ROUTES.ADMIN_PAYOUTS}
+        element={
+          <ProtectedRoute requireAdmin>
+            <Payouts />
           </ProtectedRoute>
         }
       />

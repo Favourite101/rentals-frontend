@@ -32,11 +32,11 @@ export const MyRefunds: React.FC = () => {
       <div className="container-custom py-12">
         <div className="mb-8">
           <Link
-            to={ROUTES.DASHBOARD}
+            to={ROUTES.HOME}
             className="inline-flex items-center text-primary hover:underline mb-4"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Dashboard
+            Browse Items
           </Link>
           <h1 className="text-3xl font-bold mb-2">My Refund Requests</h1>
           <p className="text-gray-600">Track the status of your refund requests</p>
@@ -48,8 +48,8 @@ export const MyRefunds: React.FC = () => {
             title="No refund requests"
             description="You haven't made any refund requests yet."
             action={
-              <Link to={ROUTES.DASHBOARD}>
-                <Button>Back to Dashboard</Button>
+              <Link to={ROUTES.HOME}>
+                <Button>Browse Items</Button>
               </Link>
             }
           />

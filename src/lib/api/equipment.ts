@@ -1,20 +1,34 @@
 import { api } from './axios';
-import { Equipment, Category, CreateEquipmentData, CreateCategoryData, ImageUploadResponse } from '@/types';
+import {
+  Equipment, Category, CreateEquipmentData, CreateCategoryData,
+  UpdateCategoryData, ImageUploadResponse, EquipmentImage, PaginatedResponse,
+} from '@/types';
+
+export type EquipmentSort = 'newest' | 'oldest' | 'price_asc' | 'price_desc';
 
 export const equipmentApi = {
   // Equipment endpoints
-  getAll: async (): Promise<Equipment[]> => {
-    const response = await api.get<Equipment[]>('/equipment/');
+  getAll: async (sort?: EquipmentSort, location?: string, skip = 0, limit = 20): Promise<PaginatedResponse<Equipment>> => {
+    const params: Record<string, string | number> = { skip, limit };
+    if (sort) params.sort = sort;
+    if (location) params.location = location;
+    const response = await api.get<PaginatedResponse<Equipment>>('/equipment/', { params });
     return response.data;
   },
 
-  getAvailable: async (): Promise<Equipment[]> => {
-    const response = await api.get<Equipment[]>('/equipment/available');
+  getAvailable: async (sort?: EquipmentSort, location?: string): Promise<Equipment[]> => {
+    const params: Record<string, string> = {};
+    if (sort) params.sort = sort;
+    if (location) params.location = location;
+    const response = await api.get<Equipment[]>('/equipment/available', { params });
     return response.data;
   },
 
-  search: async (query: string): Promise<Equipment[]> => {
-    const response = await api.get<Equipment[]>(`/equipment/search?name=${query}`);
+  search: async (query: string, sort?: EquipmentSort, location?: string, skip = 0, limit = 20): Promise<PaginatedResponse<Equipment>> => {
+    const params: Record<string, string | number> = { name: query, skip, limit };
+    if (sort) params.sort = sort;
+    if (location) params.location = location;
+    const response = await api.get<PaginatedResponse<Equipment>>('/equipment/search', { params });
     return response.data;
   },
 
@@ -73,7 +87,7 @@ export const equipmentApi = {
     return response.data;
   },
 
-  updateCategory: async (id: number, data: CreateCategoryData): Promise<Category> => {
+  updateCategory: async (id: number, data: UpdateCategoryData): Promise<Category> => {
     const response = await api.put<Category>(`/equipment/categories/${id}`, data);
     return response.data;
   },
@@ -82,7 +96,7 @@ export const equipmentApi = {
     await api.delete(`/equipment/categories/${id}`);
   },
 
-  // Image upload endpoints
+  // Image upload
   uploadImage: async (file: File): Promise<ImageUploadResponse> => {
     const formData = new FormData();
     formData.append('file', file);
@@ -99,5 +113,18 @@ export const equipmentApi = {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     return response.data;
+  },
+
+  addImage: async (equipmentId: number, file: File): Promise<EquipmentImage> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await api.post<EquipmentImage>(`/equipment/${equipmentId}/images`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
+
+  deleteImage: async (equipmentId: number, imageId: number): Promise<void> => {
+    await api.delete(`/equipment/${equipmentId}/images/${imageId}`);
   },
 };

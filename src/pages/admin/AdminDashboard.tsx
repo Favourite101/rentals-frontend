@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/Badge';
 import { adminApi } from '@/lib/api/admin';
 import { bookingsApi } from '@/lib/api/bookings';
 import { QUERY_KEYS, ROUTES } from '@/constants';
-import { Users, LayoutList, Calendar, Receipt, Activity } from 'lucide-react';
+import { Users, LayoutList, Calendar, Receipt, Activity, ClipboardList, AlertTriangle, Banknote } from 'lucide-react';
 
 export const AdminDashboard: React.FC = () => {
   const { data: stats } = useQuery({
@@ -115,6 +115,33 @@ export const AdminDashboard: React.FC = () => {
                   {pendingRefunds.length}
                 </Badge>
               )}
+            </Button>
+          </Link>
+
+          <Link to={ROUTES.ADMIN_LISTING_APPROVAL}>
+            <Button className="w-full h-32 text-lg" variant="outline">
+              <div className="flex flex-col items-center gap-2">
+                <ClipboardList className="h-8 w-8" />
+                <span>Listing Approval</span>
+              </div>
+            </Button>
+          </Link>
+
+          <Link to={ROUTES.ADMIN_NON_RETURN_REPORTS}>
+            <Button className="w-full h-32 text-lg" variant="outline">
+              <div className="flex flex-col items-center gap-2">
+                <AlertTriangle className="h-8 w-8" />
+                <span>Non-Return Reports</span>
+              </div>
+            </Button>
+          </Link>
+
+          <Link to={ROUTES.ADMIN_PAYOUTS}>
+            <Button className="w-full h-32 text-lg" variant="outline">
+              <div className="flex flex-col items-center gap-2">
+                <Banknote className="h-8 w-8" />
+                <span>Payouts</span>
+              </div>
             </Button>
           </Link>
         </div>

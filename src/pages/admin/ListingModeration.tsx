@@ -17,10 +17,11 @@ export const ListingModeration: React.FC = () => {
     const queryClient = useQueryClient();
     const [deleteConfirm, setDeleteConfirm] = React.useState<Equipment | null>(null);
 
-    const { data: listings = [], isLoading } = useQuery({
+    const { data: listingsData, isLoading } = useQuery({
         queryKey: [QUERY_KEYS.ADMIN_LISTINGS],
-        queryFn: adminApi.getListings,
+        queryFn: () => adminApi.getListings(0, 200),
     });
+    const listings = listingsData?.items ?? [];
 
     const deleteMutation = useMutation({
         mutationFn: (id: number) => adminApi.deleteListing(id),

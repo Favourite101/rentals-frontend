@@ -1,5 +1,5 @@
 import { api } from './axios';
-import type { AuthResponse, LoginCredentials, RegisterData, User, ForgotPasswordData, ResetPasswordData } from '@/types';
+import type { AuthResponse, LoginCredentials, RegisterData, User, ForgotPasswordData, ResetPasswordData, UpdateProfileData } from '@/types';
 
 export const authApi = {
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
@@ -58,8 +58,22 @@ export const authApi = {
     return response.data;
   },
 
-  updateProfile: async (data: { name?: string; email?: string }): Promise<User> => {
+  updateProfile: async (data: UpdateProfileData): Promise<User> => {
     const response = await api.patch<User>('/auth/me', data);
+    return response.data;
+  },
+
+  uploadAvatar: async (file: File): Promise<User> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await api.post<User>('/auth/me/avatar', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
+
+  verifyNin: async (nin: string): Promise<User> => {
+    const response = await api.post<User>('/auth/me/verify-nin', { nin });
     return response.data;
   },
 
@@ -78,6 +92,13 @@ export const authApi = {
 
   resetPassword: async (data: ResetPasswordData): Promise<{ message: string }> => {
     const response = await api.post<{ message: string }>('/auth/reset-password', data);
+    return response.data;
+  },
+
+  resolveAccount: async (accountNumber: string, bankCode: string): Promise<{ account_name: string }> => {
+    const response = await api.get<{ account_name: string }>('/auth/me/resolve-account', {
+      params: { account_number: accountNumber, bank_code: bankCode },
+    });
     return response.data;
   },
 };

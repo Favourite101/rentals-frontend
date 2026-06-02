@@ -1,1 +1,0 @@
-Yes, you can safely delete HANDOVER.md. All its content has been merged into the README.md, so there is no loss of information. The README.md now serves as the single source for both user and developer onboarding, handover, and maintenance documentation.

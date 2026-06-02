@@ -10,9 +10,9 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children, showFooter = true }) => {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col w-full">
       <Header />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 w-full bg-gray-50">{children}</main>
       {showFooter && <Footer />}
       <ToastContainer />
     </div>

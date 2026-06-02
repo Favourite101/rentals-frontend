@@ -16,15 +16,17 @@ import { formatCurrency, formatDate } from '@/lib/utils/formatters';
 import { QUERY_KEYS, ROUTES, BOOKING_STATUS_LABELS, BOOKING_STATUS_COLORS, REFUND_STATUS_LABELS, REFUND_STATUS_COLORS } from '@/constants';
 import { Package, Calendar, Clock, CheckCircle, Receipt, List, Bell } from 'lucide-react';
 import type { Booking, RefundRequest } from '@/types';
+import { ProfileCompletionBanner } from '@/components/ui/ProfileCompletionBanner';
 
 export const Dashboard: React.FC = () => {
   const queryClient = useQueryClient();
 
-  const { data: bookings = [], isLoading: bookingsLoading } = useQuery({
+  const { data: bookingsData, isLoading: bookingsLoading } = useQuery({
     queryKey: [QUERY_KEYS.MY_BOOKINGS],
-    queryFn: bookingsApi.getMyBookings,
+    queryFn: () => bookingsApi.getMyBookings(0, 100),
     staleTime: 0,
   });
+  const bookings = bookingsData?.items ?? [];
 
   const { data: refunds = [], isLoading: refundsLoading } = useQuery({
     queryKey: [QUERY_KEYS.MY_REFUNDS],
@@ -75,8 +77,9 @@ export const Dashboard: React.FC = () => {
   return (
     <Layout>
       <div className="container-custom py-12">
+        <ProfileCompletionBanner />
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
+          <h1 className="text-3xl font-bold mb-2">My Bookings</h1>
           <p className="text-gray-600">Your borrowing activity</p>
         </div>
 

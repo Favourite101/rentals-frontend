@@ -1,101 +1,25 @@
 import * as React from 'react';
-import { Link, useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/Button';
 import { PageLoader } from '@/components/ui/Loader';
 import { bookingsApi } from '@/lib/api/bookings';
 import { formatCurrency, formatDate } from '@/lib/utils/formatters';
-import { ROUTES } from '@/constants';
-import { CheckCircle, XCircle, Calendar, Package } from 'lucide-react';
-
-type PageStatus = 'loading' | 'success' | 'error';
+import { QUERY_KEYS, ROUTES } from '@/constants';
+import { CheckCircle, Calendar, Package } from 'lucide-react';
 
 export const BookingSuccess: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
 
-  const [pageStatus, setPageStatus] = React.useState<PageStatus>('loading');
-  const [booking, setBooking] = React.useState<Awaited<ReturnType<typeof bookingsApi.getById>> | null>(null);
-  const [errorMessage, setErrorMessage] = React.useState('');
+  const { data: booking, isLoading } = useQuery({
+    queryKey: [QUERY_KEYS.BOOKINGS, id],
+    queryFn: () => bookingsApi.getById(Number(id)),
+    enabled: !!id,
+  });
 
-  // Stripe appends these when redirecting after 3D Secure / bank redirects
-  const paymentIntentId = searchParams.get('payment_intent');
-  const redirectStatus = searchParams.get('redirect_status');
-
-  React.useEffect(() => {
-    if (!id) {
-      navigate(ROUTES.DASHBOARD);
-      return;
-    }
-
-    const confirm = async () => {
-      try {
-        if (paymentIntentId) {
-          // Stripe redirect flow (3D Secure, iDEAL, etc.)
-          if (redirectStatus === 'failed') {
-            setErrorMessage('Your payment was declined. Please try again with a different payment method.');
-            setPageStatus('error');
-            return;
-          }
-
-          if (redirectStatus === 'processing') {
-            // Rare — payment is still being processed asynchronously.
-            // Webhook will confirm the booking when it completes.
-            const fetchedBooking = await bookingsApi.getById(Number(id));
-            setBooking(fetchedBooking);
-            setPageStatus('success');
-            return;
-          }
-
-          // redirectStatus === 'succeeded' — confirm on backend
-          const confirmedBooking = await bookingsApi.confirmPayment(paymentIntentId, Number(id));
-          setBooking(confirmedBooking);
-          setPageStatus('success');
-        } else {
-          // Inline flow — payment was already confirmed before navigating here
-          const fetchedBooking = await bookingsApi.getById(Number(id));
-          setBooking(fetchedBooking);
-          setPageStatus(fetchedBooking.status === 'confirmed' ? 'success' : 'error');
-        }
-      } catch {
-        setErrorMessage('Something went wrong confirming your payment. Please check your dashboard or contact support.');
-        setPageStatus('error');
-      }
-    };
-
-    confirm();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  if (pageStatus === 'loading') {
+  if (isLoading) {
     return <Layout><PageLoader /></Layout>;
-  }
-
-  if (pageStatus === 'error') {
-    return (
-      <Layout>
-        <div className="container-custom py-12 text-center">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-red-100 mb-6">
-            <XCircle className="h-12 w-12 text-red-600" />
-          </div>
-          <h1 className="text-3xl font-bold mb-4">Payment Failed</h1>
-          <p className="text-gray-600 mb-8 max-w-md mx-auto">
-            {errorMessage || 'Your payment could not be processed.'}
-          </p>
-          <div className="flex gap-4 justify-center">
-            {id && (
-              <Link to={`/booking/${id}/payment`}>
-                <Button>Try Again</Button>
-              </Link>
-            )}
-            <Link to={ROUTES.DASHBOARD}>
-              <Button variant="outline">Go to Dashboard</Button>
-            </Link>
-          </div>
-        </div>
-      </Layout>
-    );
   }
 
   return (
@@ -139,7 +63,7 @@ export const BookingSuccess: React.FC = () => {
                 </div>
                 <div className="flex justify-between font-semibold">
                   <span>Total paid</span>
-                  <span className="text-emerald-600">{formatCurrency(booking.total_price)}</span>
+                  <span className="text-emerald-600">{formatCurrency(booking.total_price + booking.security_deposit_amount)}</span>
                 </div>
                 {booking.payment_reference && (
                   <p className="text-xs text-gray-400 break-all">
