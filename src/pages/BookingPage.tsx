@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,7 +15,6 @@ import { equipmentApi } from '@/lib/api/equipment';
 import { bookingsApi } from '@/lib/api/bookings';
 import { showToast } from '@/lib/hooks/useToast';
 import { handleApiError } from '@/lib/api/axios';
-import { getCurrentUser } from '@/lib/hooks/useAuth';
 import { bookingSchema, BookingFormData } from '@/lib/utils/validators';
 import { formatCurrency, calculateDays, calculateTotalPrice } from '@/lib/utils/formatters';
 import { QUERY_KEYS, ROUTES } from '@/constants';
@@ -39,7 +38,6 @@ export const BookingPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const currentUser = getCurrentUser();
   const prefilled = (location.state as { startDate?: string; endDate?: string } | null);
 
   const { data: equipment, isLoading } = useQuery({
