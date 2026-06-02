@@ -131,21 +131,6 @@ export const EquipmentCatalog: React.FC = () => {
               )}
             </div>
 
-            <div className="relative hidden sm:flex items-center gap-1 border border-gray-200 rounded-xl px-3 py-2 bg-white cursor-pointer hover:border-gray-300 transition-colors min-w-[150px]">
-              <SlidersHorizontal className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
-              <select
-                className="flex-1 text-sm text-gray-600 bg-transparent outline-none cursor-pointer appearance-none"
-                value={selectedCategory || ''}
-                onChange={(e) => setSelectedCategory(e.target.value ? Number(e.target.value) : null)}
-              >
-                <option value="">All categories</option>
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>{cat.name}</option>
-                ))}
-              </select>
-              <ChevronDown className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
-            </div>
-
             <Button className="rounded-xl px-5 h-10 text-sm font-medium flex-shrink-0">
               Search
             </Button>

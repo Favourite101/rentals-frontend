@@ -7,6 +7,7 @@ export interface User {
   whatsapp_number?: string | null;
   location?: string | null;
   avatar_url?: string | null;
+  email_verified?: boolean;
   nin_verified?: boolean;
   bank_name?: string | null;
   bank_code?: string | null;

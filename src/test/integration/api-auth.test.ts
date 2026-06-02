@@ -70,7 +70,7 @@ describe('authApi.uploadAvatar', () => {
 describe('authApi.verifyNin', () => {
   it('verifies NIN and returns user with nin_verified true', async () => {
     setAuthData(makeUser({ nin_verified: false }), 'test-token');
-    const result = await authApi.verifyNin('12345678901');
+    const result = await authApi.verifyNin('12345678901', '1990-01-01');
     expect(result.nin_verified).toBe(true);
   });
 
@@ -80,7 +80,7 @@ describe('authApi.verifyNin', () => {
         HttpResponse.json({ detail: 'NIN not found' }, { status: 422 })
       )
     );
-    await expect(authApi.verifyNin('00000000000')).rejects.toThrow();
+    await expect(authApi.verifyNin('00000000000', '1990-01-01')).rejects.toThrow();
   });
 });
 

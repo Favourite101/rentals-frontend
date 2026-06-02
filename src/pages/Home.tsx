@@ -112,18 +112,6 @@ export const Home: React.FC = () => {
                 />
               </div>
 
-              <div className="hidden sm:flex items-center gap-2 px-4 py-3 border-r border-gray-100 w-36 flex-shrink-0">
-                <SlidersHorizontal className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                <select
-                  className="text-sm text-gray-600 bg-transparent outline-none cursor-pointer flex-1 min-w-0"
-                  value={selectedCategory || ''}
-                  onChange={e => setSelectedCategory(e.target.value ? Number(e.target.value) : null)}
-                >
-                  <option value="">All categories</option>
-                  {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
-              </div>
-
               <div className="hidden md:flex items-center gap-2 px-4 py-3 border-r border-gray-100 w-40 flex-shrink-0">
                 <MapPin className="h-4 w-4 text-gray-400 flex-shrink-0" />
                 <span className="text-sm text-gray-600 font-medium truncate">Lagos, Nigeria</span>

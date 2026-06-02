@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
@@ -23,36 +23,6 @@ import {
 } from 'lucide-react';
 import { BackButton } from '@/components/ui/BackButton';
 
-const NIGERIAN_BANKS = [
-  { name: 'Access Bank', code: '044' },
-  { name: 'Citibank Nigeria', code: '023' },
-  { name: 'Ecobank Nigeria', code: '050' },
-  { name: 'Fidelity Bank', code: '070' },
-  { name: 'First Bank of Nigeria', code: '011' },
-  { name: 'First City Monument Bank (FCMB)', code: '214' },
-  { name: 'Globus Bank', code: '00103' },
-  { name: 'Guaranty Trust Bank (GTBank)', code: '058' },
-  { name: 'Heritage Bank', code: '030' },
-  { name: 'Jaiz Bank', code: '301' },
-  { name: 'Keystone Bank', code: '082' },
-  { name: 'Kuda Bank', code: '50211' },
-  { name: 'Moniepoint Microfinance Bank', code: '50515' },
-  { name: 'OPay', code: '100004' },
-  { name: 'Palmpay', code: '100033' },
-  { name: 'Polaris Bank', code: '076' },
-  { name: 'Providus Bank', code: '101' },
-  { name: 'Stanbic IBTC Bank', code: '221' },
-  { name: 'Standard Chartered Bank', code: '068' },
-  { name: 'Sterling Bank', code: '232' },
-  { name: 'SunTrust Bank', code: '100' },
-  { name: 'Titan Trust Bank', code: '102' },
-  { name: 'Union Bank of Nigeria', code: '032' },
-  { name: 'United Bank for Africa (UBA)', code: '033' },
-  { name: 'Unity Bank', code: '215' },
-  { name: 'VFD Microfinance Bank', code: '566' },
-  { name: 'Wema Bank', code: '035' },
-  { name: 'Zenith Bank', code: '057' },
-];
 
 const LAGOS_LGAS = [
   'Agege', 'Ajeromi-Ifelodun', 'Alimosho', 'Amuwo-Odofin', 'Apapa',
@@ -98,12 +68,19 @@ type DeleteAccountFormData = z.infer<typeof deleteAccountSchema>;
 export const Profile: React.FC = () => {
   const navigate = useNavigate();
   const user = getCurrentUser();
+
+  const { data: banks = [] } = useQuery({
+    queryKey: ['banks'],
+    queryFn: authApi.listBanks,
+    staleTime: 24 * 60 * 60 * 1000,
+  });
+
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
   const [isBankModalOpen, setIsBankModalOpen] = React.useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = React.useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
-  const [ninInput, setNinInput] = React.useState('');
   const [isResolvingAccount, setIsResolvingAccount] = React.useState(false);
+  const [nameMatchError, setNameMatchError] = React.useState<string | null>(null);
   const avatarInputRef = React.useRef<HTMLInputElement>(null);
 
   const {
@@ -169,6 +146,7 @@ export const Profile: React.FC = () => {
         account_number: user.account_number || '',
         account_name: user.account_name || '',
       });
+      setNameMatchError(null);
     }
   }, [isBankModalOpen, user, resetBank]);
 
@@ -201,16 +179,6 @@ export const Profile: React.FC = () => {
     onError: (error) => showToast(handleApiError(error), 'error'),
   });
 
-  const verifyNinMutation = useMutation({
-    mutationFn: (nin: string) => authApi.verifyNin(nin),
-    onSuccess: (updatedUser) => {
-      updateUserData(updatedUser);
-      showToast('NIN verified successfully!', 'success');
-      setNinInput('');
-    },
-    onError: (error) => showToast(handleApiError(error), 'error'),
-  });
-
   const changePasswordMutation = useMutation({
     mutationFn: authApi.changePassword,
     onSuccess: () => {
@@ -231,6 +199,12 @@ export const Profile: React.FC = () => {
     onError: (error) => showToast(handleApiError(error), 'error'),
   });
 
+  const resendVerificationMutation = useMutation({
+    mutationFn: authApi.resendVerification,
+    onSuccess: () => showToast('Verification email sent! Check your inbox.', 'success'),
+    onError: (error) => showToast(handleApiError(error), 'error'),
+  });
+
   const handleResolveAccount = async () => {
     const accountNumber = bankWatch('account_number');
     const bankCode = bankWatch('bank_code');
@@ -239,19 +213,19 @@ export const Profile: React.FC = () => {
     try {
       const { account_name } = await authApi.resolveAccount(accountNumber, bankCode);
       setBankValue('account_name', account_name);
-      // Warn if the resolved name doesn't loosely match the profile name
       const profileName = (user?.name || '').toLowerCase();
       const resolvedName = account_name.toLowerCase();
       const profileParts = new Set(profileName.split(/\s+/));
       const resolvedParts = new Set(resolvedName.split(/\s+/));
       const overlap = [...profileParts].filter(p => resolvedParts.has(p)).length;
       if (overlap < 2) {
-        showToast(`Account name "${account_name}" doesn't match your profile name. Update your full name to match.`, 'error');
+        setNameMatchError(`Account name "${account_name}" doesn't match your profile name. Update your full name to match your bank account, then re-verify.`);
       } else {
-        showToast(`Account name resolved: ${account_name}`, 'success');
+        setNameMatchError(null);
+        showToast(`Account verified: ${account_name}`, 'success');
       }
     } catch {
-      showToast('Could not resolve account name. Check account number and bank code.', 'error');
+      showToast('Could not resolve account name. Check account number and bank name.', 'error');
     } finally {
       setIsResolvingAccount(false);
     }
@@ -342,9 +316,27 @@ export const Profile: React.FC = () => {
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="flex items-start gap-3 p-4 border rounded-lg">
                   <Mail className="h-5 w-5 text-gray-400 mt-0.5" />
-                  <div>
+                  <div className="flex-1 min-w-0">
                     <label className="text-sm font-medium text-gray-500">Email Address</label>
-                    <p className="text-gray-900">{user.email}</p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="text-gray-900 break-all">{user.email}</p>
+                      {user.email_verified ? (
+                        <Badge className="bg-emerald-100 text-emerald-800 shrink-0 flex items-center gap-1">
+                          <CheckCircle2 className="h-3 w-3" /> Verified
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-amber-100 text-amber-800 shrink-0">Unverified</Badge>
+                      )}
+                    </div>
+                    {!user.email_verified && (
+                      <button
+                        onClick={() => resendVerificationMutation.mutate()}
+                        disabled={resendVerificationMutation.isPending}
+                        className="mt-1.5 text-xs text-primary hover:underline disabled:opacity-50"
+                      >
+                        {resendVerificationMutation.isPending ? 'Sending…' : 'Resend verification email'}
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -398,52 +390,6 @@ export const Profile: React.FC = () => {
                   </div>
                 )}
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Identity Verification Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
-                Identity Verification
-              </CardTitle>
-              <CardDescription>Verify your NIN to unlock borrowing on atlo</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {user.nin_verified ? (
-                <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
-                  <CheckCircle2 className="h-5 w-5 text-emerald-600 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-emerald-800">Identity Verified</p>
-                    <p className="text-sm text-emerald-600">Your NIN has been verified. You can book equipment.</p>
-                  </div>
-                  <Badge className="ml-auto bg-emerald-100 text-emerald-800">Verified</Badge>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
-                    You need to verify your National Identification Number (NIN) before you can book equipment.
-                  </div>
-                  <div className="flex gap-3">
-                    <Input
-                      placeholder="Enter your 11-digit NIN"
-                      value={ninInput}
-                      onChange={(e) => setNinInput(e.target.value)}
-                      maxLength={11}
-                      className="flex-1"
-                    />
-                    <Button
-                      onClick={() => verifyNinMutation.mutate(ninInput)}
-                      disabled={ninInput.length !== 11 || verifyNinMutation.isPending}
-                    >
-                      {verifyNinMutation.isPending ? (
-                        <><Loader size="sm" className="mr-2" />Verifying...</>
-                      ) : 'Verify NIN'}
-                    </Button>
-                  </div>
-                </div>
-              )}
             </CardContent>
           </Card>
 
@@ -587,13 +533,14 @@ export const Profile: React.FC = () => {
                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 value={bankWatch('bank_name')}
                 onChange={(e) => {
-                  const selected = NIGERIAN_BANKS.find(b => b.name === e.target.value);
+                  const selected = banks.find(b => b.name === e.target.value);
                   setBankValue('bank_name', e.target.value, { shouldValidate: true });
                   setBankValue('bank_code', selected?.code ?? '', { shouldValidate: true });
+                  setNameMatchError(null);
                 }}
               >
                 <option value="">Select your bank</option>
-                {NIGERIAN_BANKS.map(b => (
+                {banks.map(b => (
                   <option key={b.code} value={b.name}>{b.name}</option>
                 ))}
               </select>
@@ -619,10 +566,13 @@ export const Profile: React.FC = () => {
               <Label htmlFor="account_name">Account Name <span className="text-xs text-gray-400">(auto-filled)</span></Label>
               <Input id="account_name" {...registerBank('account_name')} placeholder="Auto-filled after verification" readOnly className="bg-gray-50" />
               {bankErrors.account_name && <p className="text-sm text-red-600">{bankErrors.account_name.message}</p>}
+              {nameMatchError && (
+                <p className="text-sm text-red-600">{nameMatchError}</p>
+              )}
             </div>
             <div className="flex justify-end gap-3 pt-4">
               <Button type="button" variant="outline" onClick={() => setIsBankModalOpen(false)}>Cancel</Button>
-              <Button type="submit" disabled={updateBankMutation.isPending}>
+              <Button type="submit" disabled={updateBankMutation.isPending || !!nameMatchError}>
                 {updateBankMutation.isPending ? <><Loader size="sm" className="mr-2" />Saving...</> : 'Save Bank Details'}
               </Button>
             </div>

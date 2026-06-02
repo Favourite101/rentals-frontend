@@ -114,31 +114,6 @@ export const BookingPage: React.FC = () => {
   if (isLoading) return <Layout><PageLoader /></Layout>;
   if (!equipment) return <Layout><div className="container-custom py-12"><p className="text-center">Equipment not found</p></div></Layout>;
 
-  // NIN gate — must be verified to book
-  if (currentUser && currentUser.nin_verified === false) {
-    return (
-      <Layout>
-        <div className="container-custom py-12 max-w-lg mx-auto">
-          <BackButton to={ROUTES.EQUIPMENT_DETAIL.replace(':slug', slug!)} label="Back to Item" />
-          <Card className="mt-6">
-            <CardContent className="pt-8 pb-8 text-center space-y-4">
-              <div className="h-16 w-16 rounded-full bg-amber-100 flex items-center justify-center mx-auto">
-                <AlertTriangle className="h-8 w-8 text-amber-600" />
-              </div>
-              <h2 className="text-xl font-bold">Identity Verification Required</h2>
-              <p className="text-gray-600 text-sm">
-                You need to verify your National Identification Number (NIN) before you can book equipment on atlo.
-              </p>
-              <Link to={ROUTES.PROFILE}>
-                <Button className="mt-2">Verify My NIN in Profile</Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
-      </Layout>
-    );
-  }
-
   return (
     <Layout>
       <div className="container-custom py-12">

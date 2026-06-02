@@ -72,8 +72,18 @@ export const authApi = {
     return response.data;
   },
 
-  verifyNin: async (nin: string): Promise<User> => {
-    const response = await api.post<User>('/auth/me/verify-nin', { nin });
+  verifyEmail: async (token: string): Promise<User> => {
+    const response = await api.get<User>('/auth/verify-email', { params: { token } });
+    return response.data;
+  },
+
+  resendVerification: async (): Promise<{ message: string }> => {
+    const response = await api.post<{ message: string }>('/auth/resend-verification');
+    return response.data;
+  },
+
+  verifyNin: async (nin: string, dob: string): Promise<User> => {
+    const response = await api.post<User>('/auth/me/verify-nin', { nin, dob });
     return response.data;
   },
 
@@ -99,6 +109,11 @@ export const authApi = {
     const response = await api.get<{ account_name: string }>('/auth/me/resolve-account', {
       params: { account_number: accountNumber, bank_code: bankCode },
     });
+    return response.data;
+  },
+
+  listBanks: async (): Promise<{ name: string; code: string }[]> => {
+    const response = await api.get<{ name: string; code: string }[]>('/auth/me/banks');
     return response.data;
   },
 };
