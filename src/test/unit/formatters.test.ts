@@ -37,10 +37,10 @@ describe('formatDateTime', () => {
 });
 
 describe('formatCurrency', () => {
-  it('formats a positive amount in GBP', () => {
+  it('formats a positive amount in NGN', () => {
     const result = formatCurrency(1500);
     expect(result).toContain('1,500');
-    expect(result).toMatch(/£|GBP/);
+    expect(result).toMatch(/₦|NGN/);
   });
 
   it('formats zero', () => {

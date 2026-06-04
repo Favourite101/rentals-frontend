@@ -239,11 +239,17 @@ export const PaymentPage: React.FC = () => {
               <div className="p-4 bg-gray-50 rounded-lg space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Rental fee</span>
-                  <span>{formatCurrency(booking.total_price)}</span>
+                  <span>{formatCurrency(booking.rental_fee ?? booking.total_price)}</span>
                 </div>
+                {(booking.platform_fee ?? 0) > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Service fee (10%)</span>
+                    <span>{formatCurrency(booking.platform_fee!)}</span>
+                  </div>
+                )}
                 {booking.security_deposit_amount > 0 && (
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Security deposit</span>
+                    <span className="text-gray-600">Security deposit (refundable)</span>
                     <span>{formatCurrency(booking.security_deposit_amount)}</span>
                   </div>
                 )}

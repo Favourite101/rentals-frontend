@@ -22,7 +22,7 @@ export const TermsOfService: React.FC = () => {
 
           <section>
             <h2 className="text-xl font-semibold text-gray-900 mb-3">3. Eligibility</h2>
-            <p>You must be at least 18 years old and a resident of Nigeria to use atlo. By creating an account you represent and warrant that you meet these requirements. You must also complete NIN (National Identification Number) verification before making a booking.</p>
+            <p>You must be at least 18 years old and a resident of Nigeria to use atlo. By creating an account you represent and warrant that you meet these requirements. You must verify your email address and complete your profile before making or receiving bookings.</p>
           </section>
 
           <section>

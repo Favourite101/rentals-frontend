@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -88,8 +88,9 @@ export const BookingPage: React.FC = () => {
     () => (equipment && startDate && endDate ? calculateTotalPrice(equipment.daily_rate, startDate, endDate) : 0),
     [equipment, startDate, endDate]
   );
+  const serviceFee = React.useMemo(() => Math.round(rentalTotal * 0.10), [rentalTotal]);
   const deposit = equipment?.security_deposit ?? 0;
-  const grandTotal = rentalTotal + deposit;
+  const grandTotal = rentalTotal + serviceFee + deposit;
 
   const createBookingMutation = useMutation({
     mutationFn: bookingsApi.create,
@@ -210,7 +211,12 @@ export const BookingPage: React.FC = () => {
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <input type="checkbox" id="terms" {...register('terms')} className="rounded border-gray-300" />
-                      <Label htmlFor="terms" className="font-normal">I agree to the terms and conditions</Label>
+                      <Label htmlFor="terms" className="font-normal">
+                        I agree to the{' '}
+                        <Link to={ROUTES.TERMS} target="_blank" className="text-primary hover:underline">
+                          terms and conditions
+                        </Link>
+                      </Label>
                     </div>
                     {errors.terms && <p className="text-sm text-red-600">{errors.terms.message}</p>}
                   </div>
@@ -263,8 +269,12 @@ export const BookingPage: React.FC = () => {
                         <span className="font-semibold">{days}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span>Rental total</span>
+                        <span>Rental fee</span>
                         <span className="font-semibold">{formatCurrency(rentalTotal)}</span>
+                      </div>
+                      <div className="flex justify-between text-sm text-gray-500">
+                        <span>Service fee (10%)</span>
+                        <span>{formatCurrency(serviceFee)}</span>
                       </div>
                       {deposit > 0 && (
                         <div className="flex justify-between text-sm text-gray-500">

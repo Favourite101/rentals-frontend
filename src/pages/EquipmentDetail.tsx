@@ -97,8 +97,8 @@ export const EquipmentDetail: React.FC = () => {
   const deposit = equipment.security_deposit ?? 0;
   const days = startDate && endDate ? calculateDays(startDate, endDate) : 1;
   const rentalFee = days > 0 ? calculateTotalPrice(equipment.daily_rate, startDate || minDate, endDate || minDate) : equipment.daily_rate;
-  const serviceFee = Math.round(rentalFee * 0.1);
-  const totalPerDay = equipment.daily_rate + Math.round(equipment.daily_rate * 0.1);
+  const serviceFee = Math.round(rentalFee * 0.10);
+  const totalPerDay = equipment.daily_rate + Math.round(equipment.daily_rate * 0.10);
   const ownerHasWhatsApp = !!equipment.owner?.whatsapp_number;
 
   return (

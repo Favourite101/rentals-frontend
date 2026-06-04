@@ -38,6 +38,10 @@ export const Dashboard: React.FC = () => {
   const [refundBooking, setRefundBooking] = React.useState<Booking | null>(null);
   const [refundReason, setRefundReason] = React.useState('');
 
+  // Cancel confirmation state
+  const [cancelBooking, setCancelBooking] = React.useState<Booking | null>(null);
+  const [cancelReason, setCancelReason] = React.useState('');
+
   // O(1) lookup: booking_id → refund request
   const refundsByBookingId = React.useMemo(() => {
     const map = new Map<number, RefundRequest>();
@@ -60,10 +64,12 @@ export const Dashboard: React.FC = () => {
   });
 
   const cancelMutation = useMutation({
-    mutationFn: (id: number) => bookingsApi.cancel(id),
+    mutationFn: ({ id, reason }: { id: number; reason: string }) => bookingsApi.cancel(id, reason),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.MY_BOOKINGS] });
       showToast('Booking cancelled.', 'success');
+      setCancelBooking(null);
+      setCancelReason('');
     },
     onError: (error) => showToast(handleApiError(error), 'error'),
   });
@@ -205,8 +211,8 @@ export const Dashboard: React.FC = () => {
                             booking={booking}
                             refund={refundsByBookingId.get(booking.id)}
                             onRequestRefund={() => setRefundBooking(booking)}
-                            onCancel={() => cancelMutation.mutate(booking.id)}
-                            isCancelling={cancelMutation.isPending}
+                            onCancel={() => setCancelBooking(booking)}
+                            isCancelling={cancelMutation.isPending && cancelMutation.variables?.id === booking.id}
                           />
                         </td>
                       </tr>
@@ -286,6 +292,54 @@ export const Dashboard: React.FC = () => {
                   {refundMutation.isPending ? (
                     <><Loader size="sm" className="mr-2" />Submitting...</>
                   ) : 'Submit Request'}
+                </Button>
+              </div>
+            </div>
+          )}
+        </Modal>
+
+        {/* Cancel confirmation modal */}
+        <Modal
+          isOpen={!!cancelBooking}
+          onClose={() => { setCancelBooking(null); setCancelReason(''); }}
+          title="Cancel Booking"
+          size="sm"
+        >
+          {cancelBooking && (
+            <div className="space-y-4">
+              <p className="text-gray-600">
+                Are you sure you want to cancel your{' '}
+                {cancelBooking.status === 'requested' ? 'request' : 'booking'} for{' '}
+                <strong>{cancelBooking.equipment.name}</strong>? This cannot be undone.
+              </p>
+              {cancelBooking.status === 'pending' && (
+                <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">
+                  Your booking was approved. If you cancel, the lender will need to accept a new request if you want to rebook.
+                </p>
+              )}
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-gray-700">Reason for cancellation <span className="text-red-500">*</span></label>
+                <textarea
+                  value={cancelReason}
+                  onChange={(e) => setCancelReason(e.target.value)}
+                  placeholder="Please let the lender know why you're cancelling..."
+                  rows={3}
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+                {cancelReason.length > 0 && cancelReason.length < 10 && (
+                  <p className="text-xs text-red-500">{10 - cancelReason.length} more characters needed</p>
+                )}
+              </div>
+              <div className="flex gap-3 justify-end">
+                <Button variant="outline" onClick={() => { setCancelBooking(null); setCancelReason(''); }}>
+                  Keep Booking
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => cancelMutation.mutate({ id: cancelBooking.id, reason: cancelReason })}
+                  disabled={cancelMutation.isPending || cancelReason.trim().length < 10}
+                >
+                  {cancelMutation.isPending ? <><Loader size="sm" className="mr-2" />Cancelling...</> : 'Yes, Cancel'}
                 </Button>
               </div>
             </div>

@@ -68,8 +68,8 @@ export const bookingsApi = {
     return response.data;
   },
 
-  cancel: async (id: number): Promise<Booking> => {
-    const response = await api.post<Booking>(`/bookings/${id}/cancel`);
+  cancel: async (id: number, reason?: string): Promise<Booking> => {
+    const response = await api.post<Booking>(`/bookings/${id}/cancel`, { reason: reason ?? '' });
     return response.data;
   },
 
