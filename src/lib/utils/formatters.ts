@@ -19,9 +19,11 @@ export const formatDateTime = (date: string | Date): string => {
 };
 
 export const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('en-GB', {
+  return new Intl.NumberFormat('en-NG', {
     style: 'currency',
-    currency: 'GBP',
+    currency: 'NGN',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   }).format(amount);
 };
 

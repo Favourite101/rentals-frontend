@@ -25,15 +25,24 @@ export const EquipmentDetail: React.FC = () => {
   const [startDate, setStartDate] = React.useState('');
   const [endDate, setEndDate] = React.useState('');
 
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const minDate = tomorrow.toISOString().split('T')[0];
-
   const { data: equipment, isLoading } = useQuery({
     queryKey: [QUERY_KEYS.EQUIPMENT, slug],
     queryFn: () => equipmentApi.getBySlug(slug!),
     enabled: !!slug,
   });
+
+  const isOwner = !!currentUser && !!equipment && currentUser.id === equipment.owner_id;
+
+  // Compute minimum bookable date from min_notice_hours
+  const minDate = React.useMemo(() => {
+    const base = new Date();
+    if (equipment?.min_notice_hours) {
+      base.setHours(base.getHours() + equipment.min_notice_hours);
+    } else {
+      base.setDate(base.getDate() + 1);
+    }
+    return base.toISOString().split('T')[0];
+  }, [equipment?.min_notice_hours]);
 
   // Build the full image list: gallery images first, fall back to image_url
   const allImages = React.useMemo(() => {
@@ -50,8 +59,12 @@ export const EquipmentDetail: React.FC = () => {
       navigate(ROUTES.LOGIN, { state: { from: { pathname: ROUTES.EQUIPMENT_BOOK.replace(':slug', slug!) } } });
       return;
     }
+    if (isOwner) {
+      showToast('You cannot book your own item.', 'error');
+      return;
+    }
     if (!isProfileComplete(currentUser)) {
-      showToast('Complete your profile (WhatsApp, bank account, NIN) before booking.', 'error');
+      showToast('Complete your profile (verify email, add WhatsApp number and bank account) before booking.', 'error');
       navigate(ROUTES.PROFILE);
       return;
     }
@@ -184,13 +197,19 @@ export const EquipmentDetail: React.FC = () => {
               {/* Owner */}
               {equipment.owner && (
                 <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl">
-                  <div className="h-10 w-10 rounded-full bg-primary text-white flex items-center justify-center font-semibold text-sm flex-shrink-0">
-                    {equipment.owner.name.charAt(0).toUpperCase()}
-                  </div>
+                  {equipment.owner.avatar_url ? (
+                    <img src={equipment.owner.avatar_url} alt={equipment.owner.name} className="h-10 w-10 rounded-full object-cover flex-shrink-0" />
+                  ) : (
+                    <div className="h-10 w-10 rounded-full bg-primary text-white flex items-center justify-center font-semibold text-sm flex-shrink-0">
+                      {equipment.owner.name.charAt(0).toUpperCase()}
+                    </div>
+                  )}
                   <div className="flex-1">
                     <div className="flex items-center gap-1">
                       <p className="text-sm font-semibold text-gray-900">{equipment.owner.name}</p>
-                      <BadgeCheck className="h-3.5 w-3.5 text-primary" />
+                      {equipment.owner.email_verified && equipment.owner.whatsapp_number && equipment.owner.account_number && (
+                        <BadgeCheck className="h-3.5 w-3.5 text-primary" aria-label="Verified member" />
+                      )}
                     </div>
                     <p className="text-xs text-gray-400">Item owner</p>
                   </div>
@@ -208,7 +227,7 @@ export const EquipmentDetail: React.FC = () => {
             </div>
 
             {/* ── Right: Booking panel ─────────────────────── */}
-            <div className="lg:sticky lg:top-32 h-fit">
+            <div className="lg:sticky lg:top-24 h-fit">
               <div className="border border-gray-200 rounded-2xl p-5 bg-white shadow-sm">
                 {/* Price */}
                 <div className="flex items-end justify-between mb-5">
@@ -293,7 +312,15 @@ export const EquipmentDetail: React.FC = () => {
                   )}
                 </div>
 
-                {/* Note */}
+                {/* Deposit note */}
+                {deposit > 0 && (
+                  <div className="flex items-start gap-2 p-3 bg-amber-50 rounded-xl mb-3">
+                    <Shield className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                    <p className="text-xs text-amber-700">A refundable security deposit of <strong>{formatCurrency(deposit)}</strong> will be charged and returned in full when the item is returned in good condition.</p>
+                  </div>
+                )}
+
+                {/* Pickup note */}
                 <div className="flex items-start gap-2 p-3 bg-blue-50 rounded-xl mb-4">
                   <Shield className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
                   <div>
@@ -303,7 +330,9 @@ export const EquipmentDetail: React.FC = () => {
                 </div>
 
                 {/* CTA */}
-                {adminUser ? (
+                {isOwner ? (
+                  <p className="text-center text-sm text-gray-400 py-2">This is your listing</p>
+                ) : adminUser ? (
                   <Button onClick={() => navigate(-1)} variant="outline" className="w-full rounded-xl">
                     <ArrowLeft className="h-4 w-4 mr-2" /> Go back
                   </Button>

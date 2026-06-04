@@ -20,6 +20,8 @@ export const ListingApproval: React.FC = () => {
     const queryClient = useQueryClient();
     const [rejectTarget, setRejectTarget] = React.useState<Equipment | null>(null);
     const [rejectReason, setRejectReason] = React.useState('');
+    const [lightboxItem, setLightboxItem] = React.useState<Equipment | null>(null);
+    const [lightboxIndex, setLightboxIndex] = React.useState(0);
 
     const { data: listingsData, isLoading } = useQuery({
         queryKey: [QUERY_KEYS.ADMIN_LISTINGS, 'pending'],
@@ -97,9 +99,11 @@ export const ListingApproval: React.FC = () => {
                                                 <td className="py-3 px-4">
                                                     <div className="flex items-center gap-3">
                                                         {item.image_url ? (
-                                                            <img src={item.image_url} alt={item.name} className="w-10 h-10 rounded object-cover" />
+                                                            <button onClick={() => { setLightboxItem(item); setLightboxIndex(0); }} className="flex-shrink-0">
+                                                                <img src={item.image_url} alt={item.name} className="w-10 h-10 rounded object-cover hover:opacity-80 transition-opacity cursor-zoom-in" />
+                                                            </button>
                                                         ) : (
-                                                            <div className="w-10 h-10 rounded bg-gray-100 flex items-center justify-center">
+                                                            <div className="w-10 h-10 rounded bg-gray-100 flex items-center justify-center flex-shrink-0">
                                                                 <Package className="h-5 w-5 text-gray-400" />
                                                             </div>
                                                         )}
@@ -153,6 +157,48 @@ export const ListingApproval: React.FC = () => {
                         )}
                     </CardContent>
                 </Card>
+
+                {/* Image Lightbox Modal */}
+                <Modal
+                    isOpen={!!lightboxItem}
+                    onClose={() => setLightboxItem(null)}
+                    title={lightboxItem?.name ?? ''}
+                    size="lg"
+                >
+                    {lightboxItem && (() => {
+                        const imgs = lightboxItem.images?.length
+                            ? lightboxItem.images.map(i => i.url)
+                            : lightboxItem.image_url ? [lightboxItem.image_url] : [];
+                        return (
+                            <div className="space-y-3">
+                                <img
+                                    src={imgs[lightboxIndex]}
+                                    alt={lightboxItem.name}
+                                    className="w-full max-h-[60vh] object-contain rounded-lg bg-gray-50"
+                                />
+                                {imgs.length > 1 && (
+                                    <div className="flex gap-2 flex-wrap">
+                                        {imgs.map((url, i) => (
+                                            <button key={i} onClick={() => setLightboxIndex(i)}
+                                                className={`h-14 w-16 rounded object-cover overflow-hidden border-2 ${i === lightboxIndex ? 'border-primary' : 'border-transparent'}`}>
+                                                <img src={url} alt="" className="w-full h-full object-cover" />
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                                <div className="flex gap-2 pt-2 border-t">
+                                    <Button size="sm" onClick={() => { approveMutation.mutate(lightboxItem.id); setLightboxItem(null); }} disabled={approveMutation.isPending}>
+                                        <CheckCircle className="h-4 w-4 mr-1" /> Approve
+                                    </Button>
+                                    <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50"
+                                        onClick={() => { setRejectTarget(lightboxItem); setLightboxItem(null); }}>
+                                        <XCircle className="h-4 w-4 mr-1" /> Reject
+                                    </Button>
+                                </div>
+                            </div>
+                        );
+                    })()}
+                </Modal>
 
                 {/* Reject Modal */}
                 <Modal

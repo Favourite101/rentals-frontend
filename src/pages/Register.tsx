@@ -141,6 +141,12 @@ export const Register: React.FC = () => {
                     placeholder="••••••••"
                     disabled={registerMutation.isPending}
                   />
+                  <ul className="text-xs text-gray-400 space-y-0.5 list-disc list-inside">
+                    <li>At least 8 characters</li>
+                    <li>One uppercase letter (A–Z)</li>
+                    <li>One lowercase letter (a–z)</li>
+                    <li>One number (0–9)</li>
+                  </ul>
                   {errors.password && (
                     <p className="text-sm text-red-600">{errors.password.message}</p>
                   )}

@@ -149,7 +149,7 @@ export const Home: React.FC = () => {
 
             {/* Sidebar */}
             <aside className="hidden lg:block w-52 flex-shrink-0 -mt-4">
-              <div className="bg-white rounded-2xl border border-gray-100 p-4 sticky top-32">
+              <div className="bg-white rounded-2xl border border-gray-100 p-4 sticky top-20 md:top-24">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-semibold text-gray-900">Filters</h3>
                   {(selectedCategory || showAvailableOnly) && (

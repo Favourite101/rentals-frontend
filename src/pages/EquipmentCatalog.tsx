@@ -109,7 +109,7 @@ export const EquipmentCatalog: React.FC = () => {
   return (
     <Layout>
       {/* ── Top search bar ───────────────────────────────────── */}
-      <div className="border-b border-gray-100 bg-white sticky top-28 z-30">
+      <div className="border-b border-gray-100 bg-white sticky top-16 md:top-20 z-30">
         <div className="container-custom py-3">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 flex-1 border border-gray-200 rounded-xl px-3 py-2 bg-white focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20 transition-all">

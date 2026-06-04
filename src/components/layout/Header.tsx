@@ -87,7 +87,7 @@ export const Header: React.FC = () => {
   return (
     <header className="sticky top-0 z-40 w-full bg-white border-b border-gray-300">
       <div className="container-custom">
-        <div className="flex h-28 items-center justify-between gap-4">
+        <div className="flex h-16 md:h-20 items-center justify-between gap-4">
 
           {/* Logo */}
           <Link to={ROUTES.HOME} className="flex items-center gap-2.5 flex-shrink-0 text-primary">

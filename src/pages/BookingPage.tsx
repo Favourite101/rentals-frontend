@@ -235,7 +235,7 @@ export const BookingPage: React.FC = () => {
 
           {/* Summary */}
           <div>
-            <Card className="sticky top-32">
+            <Card className="sticky top-20 md:top-24">
               <CardHeader><CardTitle>Booking Summary</CardTitle></CardHeader>
               <CardContent className="space-y-4">
                 {equipment.image_url ? (

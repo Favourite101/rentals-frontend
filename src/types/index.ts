@@ -22,6 +22,8 @@ export interface OwnerBrief {
   username: string;
   whatsapp_number?: string | null;
   avatar_url?: string | null;
+  email_verified?: boolean;
+  account_number?: string | null;
 }
 
 export interface Category {

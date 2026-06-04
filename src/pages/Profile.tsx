@@ -233,7 +233,23 @@ export const Profile: React.FC = () => {
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) uploadAvatarMutation.mutate(file);
+    if (!file) return;
+    const SIZE = 400;
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = SIZE;
+      canvas.height = SIZE;
+      const ctx = canvas.getContext('2d')!;
+      const side = Math.min(img.width, img.height);
+      const sx = (img.width - side) / 2;
+      const sy = (img.height - side) / 2;
+      ctx.drawImage(img, sx, sy, side, side, 0, 0, SIZE, SIZE);
+      canvas.toBlob((blob) => {
+        if (blob) uploadAvatarMutation.mutate(new File([blob], 'avatar.jpg', { type: 'image/jpeg' }));
+      }, 'image/jpeg', 0.9);
+    };
+    img.src = URL.createObjectURL(file);
   };
 
   if (!user) {

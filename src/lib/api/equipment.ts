@@ -82,6 +82,10 @@ export const equipmentApi = {
     return response.data;
   },
 
+  suggestCategory: async (name: string): Promise<void> => {
+    await api.post('/equipment/categories/suggest', { name });
+  },
+
   createCategory: async (data: CreateCategoryData): Promise<Category> => {
     const response = await api.post<Category>('/equipment/categories', data);
     return response.data;

@@ -53,9 +53,13 @@ export const MyListings: React.FC = () => {
     const [isUploading, setIsUploading] = React.useState(false);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-    // Extra gallery images (only shown when editing an existing listing)
+    // Extra gallery images
     const [extraFiles, setExtraFiles] = React.useState<File[]>([]);
     const [extraPreviews, setExtraPreviews] = React.useState<string[]>([]);
+
+    // "Other" category suggestion
+    const [categorySuggestion, setCategorySuggestion] = React.useState('');
+    const [suggestionSent, setSuggestionSent] = React.useState(false);
     const extraFileInputRef = React.useRef<HTMLInputElement>(null);
 
     const { data: listings = [], isLoading } = useQuery({
@@ -75,6 +79,8 @@ export const MyListings: React.FC = () => {
         resolver: zodResolver(equipmentSchema),
         defaultValues: { is_available: true, condition: 'Good', location: '', requires_approval: false },
     });
+
+    const selectedCategoryId = watch('category_id');
 
     React.useEffect(() => {
         if (editingEquipment) {
@@ -190,6 +196,8 @@ export const MyListings: React.FC = () => {
         setImagePreview(null);
         setExtraFiles([]);
         setExtraPreviews([]);
+        setCategorySuggestion('');
+        setSuggestionSent(false);
         reset();
     };
 
@@ -243,7 +251,16 @@ export const MyListings: React.FC = () => {
                 }
             });
         } else {
-            createMutation.mutate(payload);
+            createMutation.mutate(payload, {
+                onSuccess: async (newEquipment) => {
+                    if (extraFiles.length > 0) {
+                        for (const file of extraFiles) {
+                            try { await equipmentApi.addImage(newEquipment.id, file); } catch { /* best-effort */ }
+                        }
+                        queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.MY_LISTINGS] });
+                    }
+                }
+            });
         }
     };
 
@@ -371,8 +388,32 @@ export const MyListings: React.FC = () => {
                                     {categories.map((cat) => (
                                         <option key={cat.id} value={cat.id}>{cat.name}</option>
                                     ))}
+                                    <option value={-1}>Other (suggest a category)</option>
                                 </select>
                                 {errors.category_id && <p className="text-sm text-red-600">{errors.category_id.message}</p>}
+                                {Number(selectedCategoryId) === -1 && (
+                                    <div className="space-y-2 mt-1">
+                                        <input
+                                            type="text"
+                                            value={categorySuggestion}
+                                            onChange={(e) => { setCategorySuggestion(e.target.value); setSuggestionSent(false); }}
+                                            placeholder="What category would you suggest?"
+                                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                        />
+                                        <Button type="button" size="sm" variant="outline"
+                                            disabled={!categorySuggestion.trim() || suggestionSent}
+                                            onClick={async () => {
+                                                try {
+                                                    await equipmentApi.suggestCategory(categorySuggestion.trim());
+                                                    setSuggestionSent(true);
+                                                    showToast('Suggestion sent! Please select the closest existing category for now.', 'success');
+                                                } catch { showToast('Could not send suggestion', 'error'); }
+                                            }}>
+                                            {suggestionSent ? '✓ Suggestion sent' : 'Send suggestion to admin'}
+                                        </Button>
+                                        <p className="text-xs text-amber-600">Please also select the closest existing category above to submit your listing.</p>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -386,8 +427,8 @@ export const MyListings: React.FC = () => {
 
                         <div className="grid gap-4 md:grid-cols-2">
                             <div className="space-y-2">
-                                <Label htmlFor="daily_rate">Daily Rate (£) *</Label>
-                                <Input id="daily_rate" type="number" step="0.01" {...register('daily_rate')} placeholder="0.00" />
+                                <Label htmlFor="daily_rate">Daily Rate (₦) *</Label>
+                                <Input id="daily_rate" type="number" step="1" {...register('daily_rate')} placeholder="0" />
                                 {errors.daily_rate && <p className="text-sm text-red-600">{errors.daily_rate.message}</p>}
                             </div>
 
@@ -403,18 +444,15 @@ export const MyListings: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="grid gap-4 md:grid-cols-2">
-                            <div className="space-y-2">
-                                <Label htmlFor="item_value">Item Value (£)</Label>
-                                <Input id="item_value" type="number" step="0.01" {...register('item_value')} placeholder="Estimated market value" />
-                                <p className="text-xs text-gray-400">Approximate replacement cost</p>
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="security_deposit">Security Deposit (£)</Label>
-                                <Input id="security_deposit" type="number" step="0.01" {...register('security_deposit')} placeholder="0.00" />
-                                <p className="text-xs text-gray-400">Refundable deposit charged at booking</p>
-                            </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="item_value">Item Value (₦)</Label>
+                            <Input id="item_value" type="number" step="1" {...register('item_value')} placeholder="Estimated replacement cost" />
+                            <p className="text-xs text-gray-400">
+                                A refundable security deposit of <strong>20%</strong> of this value will be charged to borrowers and returned in full when the item is returned in good condition.
+                                {watch('item_value') && Number(watch('item_value')) > 0 && (
+                                    <> That's <strong>₦{Math.round(Number(watch('item_value')) * 0.2).toLocaleString()}</strong> for this item.</>
+                                )}
+                            </p>
                         </div>
 
                         <div className="space-y-2">
@@ -473,44 +511,42 @@ export const MyListings: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Extra gallery images (only when editing) */}
-                        {editingEquipment && (
-                            <div className="space-y-2">
-                                <Label>Additional Photos</Label>
-                                {/* Show existing gallery */}
-                                {editingEquipment.images && editingEquipment.images.length > 0 && (
-                                    <div className="flex flex-wrap gap-2 mb-2">
-                                        {editingEquipment.images.map((img) => (
-                                            <div key={img.id} className="relative">
-                                                <img src={img.url} alt="" className="w-16 h-16 rounded object-cover border" />
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                                {/* New extra photos to upload */}
-                                {extraPreviews.length > 0 && (
-                                    <div className="flex flex-wrap gap-2 mb-2">
-                                        {extraPreviews.map((src, i) => (
-                                            <div key={i} className="relative">
-                                                <img src={src} alt="" className="w-16 h-16 rounded object-cover border border-primary" />
-                                                <button type="button" onClick={() => removeExtraFile(i)}
-                                                    className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5">
-                                                    <X className="h-3 w-3" />
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                                <input ref={extraFileInputRef} type="file" accept="image/*" multiple onChange={handleExtraFilesSelect} className="hidden" />
-                                <Button type="button" variant="outline" size="sm"
-                                    onClick={() => extraFileInputRef.current?.click()}
-                                    className="flex items-center gap-2">
-                                    <Image className="h-4 w-4" />
-                                    Add More Photos
-                                </Button>
-                                <p className="text-xs text-gray-400">More photos help borrowers decide faster</p>
-                            </div>
-                        )}
+                        {/* Extra gallery images */}
+                        <div className="space-y-2">
+                            <Label>Additional Photos</Label>
+                            {/* Show existing gallery (editing only) */}
+                            {editingEquipment && editingEquipment.images && editingEquipment.images.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mb-2">
+                                    {editingEquipment.images.map((img) => (
+                                        <div key={img.id} className="relative">
+                                            <img src={img.url} alt="" className="w-16 h-16 rounded object-cover border" />
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            {/* New extra photos to upload */}
+                            {extraPreviews.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mb-2">
+                                    {extraPreviews.map((src, i) => (
+                                        <div key={i} className="relative">
+                                            <img src={src} alt="" className="w-16 h-16 rounded object-cover border border-primary" />
+                                            <button type="button" onClick={() => removeExtraFile(i)}
+                                                className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5">
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            <input ref={extraFileInputRef} type="file" accept="image/*" multiple onChange={handleExtraFilesSelect} className="hidden" />
+                            <Button type="button" variant="outline" size="sm"
+                                onClick={() => extraFileInputRef.current?.click()}
+                                className="flex items-center gap-2">
+                                <Image className="h-4 w-4" />
+                                Add More Photos
+                            </Button>
+                            <p className="text-xs text-gray-400">More photos help borrowers decide faster</p>
+                        </div>
 
                         <div className="flex items-center gap-2 py-2 border-t mt-4">
                             <input type="checkbox" id="is_available" {...register('is_available')}
