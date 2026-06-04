@@ -171,7 +171,34 @@ export const PaymentPage: React.FC = () => {
     );
   }
 
+  if (booking.status === 'requested') {
+    return (
+      <Layout>
+        <div className="container-custom py-12 max-w-md mx-auto text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-100 mb-4">
+            <Calendar className="h-8 w-8 text-amber-600" />
+          </div>
+          <h2 className="text-2xl font-bold mb-2">Awaiting Lender Approval</h2>
+          <p className="text-gray-600 mb-2">
+            The owner of <strong>{booking.equipment.name}</strong> reviews each request before payment.
+          </p>
+          <p className="text-gray-500 text-sm mb-6">
+            You'll receive an email and notification once they approve or decline. Payment will only be charged after approval.
+          </p>
+          <Button onClick={() => navigate(ROUTES.DASHBOARD)}>View My Bookings</Button>
+        </div>
+      </Layout>
+    );
+  }
+
   if (booking.status !== 'pending') {
+    const messages: Record<string, string> = {
+      confirmed: 'This booking has already been paid for.',
+      cancelled: 'This booking was cancelled.',
+      declined: 'This rental request was declined by the lender.',
+      expired: 'This booking expired without payment.',
+      failed: 'The payment for this booking failed.',
+    };
     return (
       <Layout>
         <div className="container-custom py-12 text-center">
@@ -179,9 +206,7 @@ export const PaymentPage: React.FC = () => {
             {booking.status === 'confirmed' ? 'Booking Already Paid' : 'Booking Unavailable'}
           </h2>
           <p className="text-gray-600 mb-6">
-            {booking.status === 'confirmed'
-              ? 'This booking has already been paid for.'
-              : 'This booking is no longer available for payment.'}
+            {messages[booking.status] ?? 'This booking is no longer available for payment.'}
           </p>
           <Button onClick={() => navigate(ROUTES.DASHBOARD)}>Go to Dashboard</Button>
         </div>

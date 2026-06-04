@@ -59,6 +59,15 @@ export const Dashboard: React.FC = () => {
     },
   });
 
+  const cancelMutation = useMutation({
+    mutationFn: (id: number) => bookingsApi.cancel(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.MY_BOOKINGS] });
+      showToast('Booking cancelled.', 'success');
+    },
+    onError: (error) => showToast(handleApiError(error), 'error'),
+  });
+
   const handleRefundRequest = () => {
     if (!refundBooking || refundReason.length < 10) return;
     refundMutation.mutate({ booking_id: refundBooking.id, reason: refundReason });
@@ -196,6 +205,8 @@ export const Dashboard: React.FC = () => {
                             booking={booking}
                             refund={refundsByBookingId.get(booking.id)}
                             onRequestRefund={() => setRefundBooking(booking)}
+                            onCancel={() => cancelMutation.mutate(booking.id)}
+                            isCancelling={cancelMutation.isPending}
                           />
                         </td>
                       </tr>
@@ -290,19 +301,38 @@ interface BookingActionsProps {
   booking: Booking;
   refund?: RefundRequest;
   onRequestRefund: () => void;
+  onCancel: () => void;
+  isCancelling: boolean;
 }
 
-const BookingActions: React.FC<BookingActionsProps> = ({ booking, refund, onRequestRefund }) => {
+const BookingActions: React.FC<BookingActionsProps> = ({ booking, refund, onRequestRefund, onCancel, isCancelling }) => {
+  if (booking.status === 'requested') {
+    return (
+      <div className="flex flex-col gap-1.5">
+        <span className="text-xs text-amber-600 font-medium">Awaiting lender approval</span>
+        <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50"
+          onClick={onCancel} disabled={isCancelling}>
+          {isCancelling ? <><Loader size="sm" className="mr-1" />Cancelling...</> : 'Cancel Request'}
+        </Button>
+      </div>
+    );
+  }
+
   if (booking.status === 'pending') {
     return (
-      <Link to={`/booking/${booking.id}/payment`}>
-        <Button size="sm">Pay Now</Button>
-      </Link>
+      <div className="flex gap-2">
+        <Link to={`/booking/${booking.id}/payment`}>
+          <Button size="sm">Pay Now</Button>
+        </Link>
+        <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50"
+          onClick={onCancel} disabled={isCancelling}>
+          {isCancelling ? <Loader size="sm" /> : 'Cancel'}
+        </Button>
+      </div>
     );
   }
 
   if (booking.status === 'confirmed') {
-    // No refund, or previous refund was rejected → allow submission
     if (!refund || refund.status === 'rejected') {
       return (
         <Button size="sm" variant="outline" onClick={onRequestRefund}>
@@ -310,12 +340,19 @@ const BookingActions: React.FC<BookingActionsProps> = ({ booking, refund, onRequ
         </Button>
       );
     }
-    // Pending / approved / processed → show live status linking to My Refunds
     return (
       <Link to={ROUTES.MY_REFUNDS}>
         <Badge className={`${REFUND_STATUS_COLORS[refund.status]} cursor-pointer`}>
           {REFUND_STATUS_LABELS[refund.status]}
         </Badge>
+      </Link>
+    );
+  }
+
+  if (booking.status === 'declined') {
+    return (
+      <Link to={ROUTES.EQUIPMENT_DETAIL.replace(':slug', booking.equipment.slug)}>
+        <Button size="sm" variant="outline">Try Again</Button>
       </Link>
     );
   }
