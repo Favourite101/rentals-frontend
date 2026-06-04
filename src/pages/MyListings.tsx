@@ -175,7 +175,7 @@ export const MyListings: React.FC = () => {
 
     const openAddModal = () => {
         if (!profileComplete) {
-            showToast('Complete your profile (WhatsApp, bank account, NIN) before listing an item.', 'error');
+            showToast('Complete your profile (verify email, add WhatsApp number and bank account) before listing an item.', 'error');
             return;
         }
         setEditingEquipment(null);
