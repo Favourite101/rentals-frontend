@@ -35,64 +35,70 @@ interface PaymentSummaryProps {
   booking: Booking;
 }
 
-const PaymentSummary: React.FC<PaymentSummaryProps> = ({ booking }) => (
-  <Card>
-    <CardHeader>
-      <CardTitle className="flex items-center gap-2">
-        <Package className="h-5 w-5" />
-        Booking Summary
-      </CardTitle>
-    </CardHeader>
-    <CardContent className="space-y-4">
-      <div className="flex items-start gap-4">
-        {booking.equipment.image_url ? (
-          <img
-            src={booking.equipment.image_url}
-            alt={booking.equipment.name}
-            className="w-24 h-24 rounded-lg object-cover"
-          />
-        ) : (
-          <div className="w-24 h-24 rounded-lg bg-gray-100 flex items-center justify-center">
-            <Package className="h-8 w-8 text-gray-400" />
+const PaymentSummary: React.FC<PaymentSummaryProps> = ({ booking }) => {
+  const rentalFee = booking.rental_fee ?? booking.total_price;
+  const serviceFee = Math.round(rentalFee * 0.05);
+  const deposit = booking.security_deposit_amount ?? 0;
+  const grandTotal = rentalFee + serviceFee + deposit;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Package className="h-5 w-5" />
+          Booking Summary
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex items-start gap-4">
+          {booking.equipment.image_url ? (
+            <img
+              src={booking.equipment.image_url}
+              alt={booking.equipment.name}
+              className="w-24 h-24 rounded-lg object-cover"
+            />
+          ) : (
+            <div className="w-24 h-24 rounded-lg bg-gray-100 flex items-center justify-center">
+              <Package className="h-8 w-8 text-gray-400" />
+            </div>
+          )}
+          <div>
+            <h3 className="font-semibold text-lg">{booking.equipment.name}</h3>
+            <p className="text-sm text-gray-600">{booking.equipment.category?.name}</p>
           </div>
-        )}
-        <div>
-          <h3 className="font-semibold text-lg">{booking.equipment.name}</h3>
-          <p className="text-sm text-gray-600">{booking.equipment.category?.name}</p>
         </div>
-      </div>
 
-      <div className="border-t pt-4 space-y-3">
-        <div className="flex items-center gap-2 text-sm">
-          <Calendar className="h-4 w-4 text-gray-500" />
-          <span className="text-gray-600">Rental Period:</span>
-        </div>
-        <div className="pl-6 text-sm">
-          <p>{formatDate(booking.start_date)} — {formatDate(booking.end_date)}</p>
-        </div>
-      </div>
+        <div className="border-t pt-4 space-y-2">
+          <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
+            <Calendar className="h-4 w-4" />
+            <span>{formatDate(booking.start_date)} — {formatDate(booking.end_date)}</span>
+          </div>
 
-      <div className="border-t pt-4 space-y-2">
-        <div className="flex justify-between items-center">
-          <span className="text-gray-600">Rental total:</span>
-          <span>{formatCurrency(booking.total_price)}</span>
-        </div>
-        {booking.security_deposit_amount > 0 && (
+          <div className="flex justify-between items-center text-sm">
+            <span className="text-gray-600">Rental fee</span>
+            <span>{formatCurrency(rentalFee)}</span>
+          </div>
           <div className="flex justify-between items-center text-sm text-gray-500">
-            <span className="flex items-center gap-1">
-              <Shield className="h-3.5 w-3.5" /> Deposit (refundable):
-            </span>
-            <span>{formatCurrency(booking.security_deposit_amount)}</span>
+            <span>Service fee (5%)</span>
+            <span>{formatCurrency(serviceFee)}</span>
           </div>
-        )}
-        <div className="flex justify-between items-center pt-2 border-t text-lg font-bold">
-          <span>Total charged:</span>
-          <span className="text-primary">{formatCurrency(booking.total_price + booking.security_deposit_amount)}</span>
+          {deposit > 0 && (
+            <div className="flex justify-between items-center text-sm text-gray-500">
+              <span className="flex items-center gap-1">
+                <Shield className="h-3.5 w-3.5" /> Deposit (refundable)
+              </span>
+              <span>{formatCurrency(deposit)}</span>
+            </div>
+          )}
+          <div className="flex justify-between items-center pt-2 border-t text-lg font-bold">
+            <span>Total charged</span>
+            <span className="text-primary">{formatCurrency(grandTotal)}</span>
+          </div>
         </div>
-      </div>
-    </CardContent>
-  </Card>
-);
+      </CardContent>
+    </Card>
+  );
+};
 
 export const PaymentPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -214,7 +220,9 @@ export const PaymentPage: React.FC = () => {
     );
   }
 
-  const totalCharged = booking.total_price + booking.security_deposit_amount;
+  const rentalFee = booking.rental_fee ?? booking.total_price;
+  const serviceFee = Math.round(rentalFee * 0.05);
+  const totalCharged = rentalFee + serviceFee + (booking.security_deposit_amount ?? 0);
 
   return (
     <Layout>
@@ -239,15 +247,13 @@ export const PaymentPage: React.FC = () => {
               <div className="p-4 bg-gray-50 rounded-lg space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Rental fee</span>
-                  <span>{formatCurrency(booking.rental_fee ?? booking.total_price)}</span>
+                  <span>{formatCurrency(rentalFee)}</span>
                 </div>
-                {(booking.platform_fee ?? 0) > 0 && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Service fee (10%)</span>
-                    <span>{formatCurrency(booking.platform_fee!)}</span>
-                  </div>
-                )}
-                {booking.security_deposit_amount > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Service fee (5%)</span>
+                  <span>{formatCurrency(serviceFee)}</span>
+                </div>
+                {(booking.security_deposit_amount ?? 0) > 0 && (
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Security deposit (refundable)</span>
                     <span>{formatCurrency(booking.security_deposit_amount)}</span>

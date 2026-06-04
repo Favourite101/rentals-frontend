@@ -97,8 +97,8 @@ export const EquipmentDetail: React.FC = () => {
   const deposit = equipment.security_deposit ?? 0;
   const days = startDate && endDate ? calculateDays(startDate, endDate) : 1;
   const rentalFee = days > 0 ? calculateTotalPrice(equipment.daily_rate, startDate || minDate, endDate || minDate) : equipment.daily_rate;
-  const serviceFee = Math.round(rentalFee * 0.10);
-  const totalPerDay = equipment.daily_rate + Math.round(equipment.daily_rate * 0.10);
+  const serviceFee = Math.round(rentalFee * 0.05);
+  const totalPerDay = equipment.daily_rate + Math.round(equipment.daily_rate * 0.05);
   const ownerHasWhatsApp = !!equipment.owner?.whatsapp_number;
 
   return (
@@ -280,7 +280,7 @@ export const EquipmentDetail: React.FC = () => {
                         <span>{formatCurrency(rentalFee)}</span>
                       </div>
                       <div className="flex justify-between text-sm text-gray-600">
-                        <span>Service fee (10%)</span>
+                        <span>Service fee (5%)</span>
                         <span>{formatCurrency(serviceFee)}</span>
                       </div>
                       <div className="flex justify-between font-bold text-gray-900 pt-2 border-t border-gray-100">
@@ -295,7 +295,7 @@ export const EquipmentDetail: React.FC = () => {
                         <span>{formatCurrency(equipment.daily_rate)}</span>
                       </div>
                       <div className="flex justify-between text-sm text-gray-600">
-                        <span>Service fee (10%)</span>
+                        <span>Service fee (5%)</span>
                         <span>{formatCurrency(Math.round(equipment.daily_rate * 0.1))}</span>
                       </div>
                       <div className="flex justify-between font-bold text-gray-900 pt-2 border-t border-gray-100">
@@ -327,6 +327,11 @@ export const EquipmentDetail: React.FC = () => {
                     <p className="text-xs font-semibold text-blue-700">Pickup only</p>
                     <p className="text-xs text-blue-500">Arrange collection with the owner after booking.</p>
                   </div>
+                </div>
+
+                {/* Fee transparency note */}
+                <div className="text-xs text-gray-400 border-t pt-3">
+                  <p>A <strong>5% service fee</strong> is added to your total at checkout to cover platform and payment processing costs.</p>
                 </div>
 
                 {/* CTA */}

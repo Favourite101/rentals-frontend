@@ -483,6 +483,11 @@ export const MyListings: React.FC = () => {
                             </div>
                         </div>
 
+                        {/* Platform fee notice */}
+                        <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-500">
+                            <strong>Platform fee:</strong> atlo deducts a 20% commission from each completed rental. You receive 80% of your stated daily rate, paid out weekly to your registered bank account.
+                        </div>
+
                         {editingEquipment?.status === 'rejected' && (
                             <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
                                 This listing was rejected. Saving changes will resubmit it for admin review.

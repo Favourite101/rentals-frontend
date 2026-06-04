@@ -200,7 +200,11 @@ export const Dashboard: React.FC = () => {
                           <div>{formatDate(booking.start_date)}</div>
                           <div className="text-gray-600">to {formatDate(booking.end_date)}</div>
                         </td>
-                        <td className="py-3 px-4 font-semibold">{formatCurrency(booking.total_price)}</td>
+                        <td className="py-3 px-4 font-semibold">
+                          {formatCurrency(
+                            Math.round((booking.rental_fee ?? booking.total_price) * 1.05) + (booking.security_deposit_amount ?? 0)
+                          )}
+                        </td>
                         <td className="py-3 px-4">
                           <Badge className={BOOKING_STATUS_COLORS[booking.status]}>
                             {BOOKING_STATUS_LABELS[booking.status] ?? booking.status}

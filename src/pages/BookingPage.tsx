@@ -88,7 +88,7 @@ export const BookingPage: React.FC = () => {
     () => (equipment && startDate && endDate ? calculateTotalPrice(equipment.daily_rate, startDate, endDate) : 0),
     [equipment, startDate, endDate]
   );
-  const serviceFee = React.useMemo(() => Math.round(rentalTotal * 0.10), [rentalTotal]);
+  const serviceFee = React.useMemo(() => Math.round(rentalTotal * 0.05), [rentalTotal]);
   const deposit = equipment?.security_deposit ?? 0;
   const grandTotal = rentalTotal + serviceFee + deposit;
 
@@ -273,7 +273,7 @@ export const BookingPage: React.FC = () => {
                         <span className="font-semibold">{formatCurrency(rentalTotal)}</span>
                       </div>
                       <div className="flex justify-between text-sm text-gray-500">
-                        <span>Service fee (10%)</span>
+                        <span>Service fee (5%)</span>
                         <span>{formatCurrency(serviceFee)}</span>
                       </div>
                       {deposit > 0 && (

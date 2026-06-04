@@ -109,7 +109,10 @@ export const LendingRequests: React.FC = () => {
                                             <p className="text-sm text-gray-600">
                                                 {booking.borrower?.name || 'Unknown'} &bull; {formatDate(booking.start_date)} – {formatDate(booking.end_date)}
                                             </p>
-                                            <p className="text-sm font-semibold text-emerald-700 mt-1">{formatCurrency(booking.total_price)}</p>
+                                            <p className="text-sm font-semibold text-emerald-700 mt-1">
+                                                {formatCurrency(booking.rental_fee ?? booking.total_price)} rental
+                                                <span className="text-gray-400 font-normal ml-1">· your payout: {formatCurrency(booking.lender_payout_amount ?? (booking.rental_fee ?? booking.total_price) * 0.8)}</span>
+                                            </p>
                                         </div>
                                         <div className="flex gap-2 ml-4 flex-shrink-0">
                                             <Button
@@ -309,9 +312,15 @@ export const LendingRequests: React.FC = () => {
                                     </Badge>
                                 </div>
                                 <div className="text-right">
-                                    <span className="text-gray-500 block text-sm mb-1">Your Payout</span>
-                                    <p className="text-2xl font-bold text-emerald-600">
-                                        {formatCurrency(selectedBooking.lender_payout_amount ?? selectedBooking.total_price)}
+                                    <span className="text-gray-500 block text-sm mb-1">
+                                        Rental value <span className="text-xs text-gray-400">/ your earnings</span>
+                                    </span>
+                                    <p className="text-xl font-bold text-gray-900">
+                                        {formatCurrency(selectedBooking.rental_fee ?? selectedBooking.total_price)}
+                                    </p>
+                                    <p className="text-sm text-emerald-600 font-medium">
+                                        You receive: {formatCurrency(selectedBooking.lender_payout_amount ?? (selectedBooking.rental_fee ?? selectedBooking.total_price) * 0.8)}
+                                        <span className="text-gray-400 font-normal"> (after platform commission)</span>
                                     </p>
                                 </div>
                             </div>
