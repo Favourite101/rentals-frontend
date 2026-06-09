@@ -80,35 +80,10 @@ export const isAdmin = (): boolean => {
   return user?.role === 'admin';
 };
 
-// Reactive hook — re-renders the component when auth state changes (same tab or cross-tab)
+// Reactive hook — re-renders when updateUserData / setAuthData / clearAuthData is called.
+// Cross-device freshness is handled by the Profile page fetching /auth/me on mount.
 export const useCurrentUser = (): User | null => {
   const [, rerender] = React.useReducer(x => x + 1, 0);
-
-  React.useEffect(() => {
-    // Same-tab updates (notifyListeners fires on setAuthData / updateUserData / clearAuthData)
-    const unsubscribe = subscribeToAuth(rerender);
-
-    // Cross-tab updates (email link opens in a different browser tab)
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === STORAGE_KEYS.USER_DATA) {
-        try {
-          const updated = e.newValue ? (JSON.parse(e.newValue) as User) : null;
-          if (updated) {
-            authState = { ...authState, user: updated };
-          } else {
-            authState = { user: null, token: null };
-          }
-        } catch {}
-        rerender();
-      }
-    };
-    window.addEventListener('storage', onStorage);
-
-    return () => {
-      unsubscribe();
-      window.removeEventListener('storage', onStorage);
-    };
-  }, []);
-
+  React.useEffect(() => subscribeToAuth(rerender), []);
   return getCurrentUser();
 };

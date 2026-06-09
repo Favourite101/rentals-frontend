@@ -69,6 +69,18 @@ export const Profile: React.FC = () => {
   const navigate = useNavigate();
   const user = useCurrentUser();
 
+  // Always fetch fresh user data from the server — picks up changes from other devices
+  // (e.g. email verified on a different browser/device)
+  useQuery({
+    queryKey: ['profile-me'],
+    queryFn: async () => {
+      const fresh = await authApi.getCurrentUser();
+      updateUserData(fresh);
+      return fresh;
+    },
+    staleTime: 0,
+  });
+
   const { data: banks = [] } = useQuery({
     queryKey: ['banks'],
     queryFn: authApi.listBanks,
