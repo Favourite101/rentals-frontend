@@ -57,9 +57,6 @@ export const MyListings: React.FC = () => {
     const [extraFiles, setExtraFiles] = React.useState<File[]>([]);
     const [extraPreviews, setExtraPreviews] = React.useState<string[]>([]);
 
-    // "Other" category suggestion
-    const [categorySuggestion, setCategorySuggestion] = React.useState('');
-    const [suggestionSent, setSuggestionSent] = React.useState(false);
     const extraFileInputRef = React.useRef<HTMLInputElement>(null);
 
     const { data: listings = [], isLoading } = useQuery({
@@ -79,8 +76,6 @@ export const MyListings: React.FC = () => {
         resolver: zodResolver(equipmentSchema),
         defaultValues: { is_available: true, condition: 'Good', location: '', requires_approval: false },
     });
-
-    const selectedCategoryId = watch('category_id');
 
     React.useEffect(() => {
         if (editingEquipment) {
@@ -196,8 +191,6 @@ export const MyListings: React.FC = () => {
         setImagePreview(null);
         setExtraFiles([]);
         setExtraPreviews([]);
-        setCategorySuggestion('');
-        setSuggestionSent(false);
         reset();
     };
 
@@ -388,32 +381,8 @@ export const MyListings: React.FC = () => {
                                     {categories.map((cat) => (
                                         <option key={cat.id} value={cat.id}>{cat.name}</option>
                                     ))}
-                                    <option value={-1}>Other (suggest a category)</option>
                                 </select>
                                 {errors.category_id && <p className="text-sm text-red-600">{errors.category_id.message}</p>}
-                                {Number(selectedCategoryId) === -1 && (
-                                    <div className="space-y-2 mt-1">
-                                        <input
-                                            type="text"
-                                            value={categorySuggestion}
-                                            onChange={(e) => { setCategorySuggestion(e.target.value); setSuggestionSent(false); }}
-                                            placeholder="What category would you suggest?"
-                                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                        />
-                                        <Button type="button" size="sm" variant="outline"
-                                            disabled={!categorySuggestion.trim() || suggestionSent}
-                                            onClick={async () => {
-                                                try {
-                                                    await equipmentApi.suggestCategory(categorySuggestion.trim());
-                                                    setSuggestionSent(true);
-                                                    showToast('Suggestion sent! Please select the closest existing category for now.', 'success');
-                                                } catch { showToast('Could not send suggestion', 'error'); }
-                                            }}>
-                                            {suggestionSent ? '✓ Suggestion sent' : 'Send suggestion to admin'}
-                                        </Button>
-                                        <p className="text-xs text-amber-600">Please also select the closest existing category above to submit your listing.</p>
-                                    </div>
-                                )}
                             </div>
                         </div>
 
