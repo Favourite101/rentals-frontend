@@ -4,7 +4,8 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { Layout } from '@/components/layout/Layout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { PageLoader, Loader } from '@/components/ui/Loader';
+import { Loader } from '@/components/ui/Loader';
+import { PaymentPageSkeleton } from '@/components/ui/Skeleton';
 import { bookingsApi } from '@/lib/api/bookings';
 import { getCurrentUser } from '@/lib/hooks/useAuth';
 import { showToast } from '@/lib/hooks/useToast';
@@ -163,7 +164,7 @@ export const PaymentPage: React.FC = () => {
   };
 
   if (bookingLoading) {
-    return <Layout><PageLoader /></Layout>;
+    return <Layout><PaymentPageSkeleton /></Layout>;
   }
 
   if (!booking) {

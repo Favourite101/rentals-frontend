@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/Button';
-import { PageLoader } from '@/components/ui/Loader';
+import { EquipmentDetailSkeleton } from '@/components/ui/Skeleton';
 import { equipmentApi } from '@/lib/api/equipment';
 import { QUERY_KEYS, ROUTES } from '@/constants';
 import { formatCurrency, calculateDays, calculateTotalPrice } from '@/lib/utils/formatters';
@@ -81,7 +81,7 @@ export const EquipmentDetail: React.FC = () => {
     window.open(`https://wa.me/${clean}`, '_blank');
   };
 
-  if (isLoading) return <Layout><PageLoader /></Layout>;
+  if (isLoading) return <Layout><EquipmentDetailSkeleton /></Layout>;
 
   if (!equipment) {
     return (

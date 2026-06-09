@@ -7,7 +7,8 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { Label } from '@/components/ui/Label';
-import { PageLoader, Loader } from '@/components/ui/Loader';
+import { Loader } from '@/components/ui/Loader';
+import { DashboardSkeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { bookingsApi } from '@/lib/api/bookings';
 import { showToast } from '@/lib/hooks/useToast';
@@ -86,7 +87,7 @@ export const Dashboard: React.FC = () => {
   }), [bookings]);
 
   if (bookingsLoading || refundsLoading) {
-    return <Layout><PageLoader /></Layout>;
+    return <Layout><DashboardSkeleton /></Layout>;
   }
 
   return (

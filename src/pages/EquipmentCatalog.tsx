@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { EquipmentCard } from '@/components/equipment/EquipmentCard';
 import { Button } from '@/components/ui/Button';
-import { PageLoader } from '@/components/ui/Loader';
+import { EquipmentCardSkeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { equipmentApi, EquipmentSort } from '@/lib/api/equipment';
 import { QUERY_KEYS } from '@/constants';
@@ -101,10 +101,6 @@ export const EquipmentCatalog: React.FC = () => {
   };
 
   const hasActiveFilters = searchQuery || locationQuery || selectedCategory || showAvailableOnly || minPrice !== '' || maxPrice !== '';
-
-  if (isLoading) {
-    return <Layout><PageLoader /></Layout>;
-  }
 
   return (
     <Layout>
@@ -323,7 +319,11 @@ export const EquipmentCatalog: React.FC = () => {
               )}
 
               {/* Grid */}
-              {filteredEquipment.length > 0 ? (
+              {isLoading || !equipmentData ? (
+                <div className="grid gap-4 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {Array.from({ length: 8 }).map((_, i) => <EquipmentCardSkeleton key={i} />)}
+                </div>
+              ) : filteredEquipment.length > 0 ? (
                 <div className="grid gap-4 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {filteredEquipment.map((item) => (
                     <EquipmentCard key={item.id} equipment={item} />
