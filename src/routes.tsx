@@ -1,4 +1,11 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import * as React from 'react';
+
+const ScrollToTop: React.FC = () => {
+  const { pathname } = useLocation();
+  React.useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  return null;
+};
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { ROUTES } from './constants';
 
@@ -33,6 +40,8 @@ import { Payouts } from './pages/admin/Payouts';
 
 export const AppRoutes = () => {
   return (
+    <>
+    <ScrollToTop />
     <Routes>
       <Route path={ROUTES.HOME} element={<Home />} />
       <Route path={ROUTES.LOGIN} element={<Login />} />
@@ -183,5 +192,6 @@ export const AppRoutes = () => {
         }
       />
     </Routes>
+    </>
   );
 };

@@ -13,7 +13,7 @@ import { Modal } from '@/components/ui/Modal';
 import { Loader } from '@/components/ui/Loader';
 import { Badge } from '@/components/ui/Badge';
 import { authApi } from '@/lib/api/auth';
-import { getCurrentUser, updateUserData, clearAuthData } from '@/lib/hooks/useAuth';
+import { useCurrentUser, updateUserData, clearAuthData } from '@/lib/hooks/useAuth';
 import { showToast } from '@/lib/hooks/useToast';
 import { handleApiError } from '@/lib/api/axios';
 import { ROUTES } from '@/constants';
@@ -67,7 +67,7 @@ type DeleteAccountFormData = z.infer<typeof deleteAccountSchema>;
 
 export const Profile: React.FC = () => {
   const navigate = useNavigate();
-  const user = getCurrentUser();
+  const user = useCurrentUser();
 
   const { data: banks = [] } = useQuery({
     queryKey: ['banks'],
@@ -154,8 +154,23 @@ export const Profile: React.FC = () => {
     mutationFn: authApi.updateProfile,
     onSuccess: (updatedUser) => {
       updateUserData(updatedUser);
-      showToast('Profile updated successfully!', 'success');
       setIsEditModalOpen(false);
+
+      // Warn if the new name no longer matches the stored bank account name
+      if (updatedUser.account_name) {
+        const newNameParts = new Set(updatedUser.name.toLowerCase().split(/\s+/));
+        const bankNameParts = new Set(updatedUser.account_name.toLowerCase().split(/\s+/));
+        const overlap = [...newNameParts].filter(p => bankNameParts.has(p)).length;
+        if (overlap < 2) {
+          showToast(
+            'Name updated — but it no longer matches your bank account name. Please re-verify your bank account.',
+            'error',
+          );
+          return;
+        }
+      }
+
+      showToast('Profile updated successfully!', 'success');
     },
     onError: (error) => showToast(handleApiError(error), 'error'),
   });
@@ -511,7 +526,12 @@ export const Profile: React.FC = () => {
               <Label htmlFor="name">Full Name</Label>
               <Input id="name" {...registerProfile('name')} placeholder="Your full name" />
               {profileErrors.name && <p className="text-sm text-red-600">{profileErrors.name.message}</p>}
-              <p className="text-xs text-gray-500">Must match the name on your NIN and bank account.</p>
+              <p className="text-xs text-gray-500">Must match the name on your bank account.</p>
+              {user.account_name && (
+                <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-md px-3 py-2 mt-1">
+                  You have a bank account registered under <strong>{user.account_name}</strong>. If you change your name, you will need to re-verify your bank account.
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="whatsapp_number">WhatsApp Number</Label>
