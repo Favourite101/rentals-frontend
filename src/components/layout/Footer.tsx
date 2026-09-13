@@ -46,6 +46,7 @@ export const Footer: React.FC = () => {
             <ul className="space-y-3">
               <FooterLink to={ROUTES.EQUIPMENT} label="Categories" />
               <FooterLink to={ROUTES.EQUIPMENT} label="Browse items" />
+              <FooterLink to={ROUTES.WAITLIST} label="Join the waitlist" />
               <FooterLink to={ROUTES.HOME} label="For business" />
               <FooterLink to={ROUTES.HOME} label="Community" />
             </ul>

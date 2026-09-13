@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/Badge';
 import { adminApi } from '@/lib/api/admin';
 import { bookingsApi } from '@/lib/api/bookings';
 import { QUERY_KEYS, ROUTES } from '@/constants';
-import { Users, LayoutList, Calendar, Receipt, Activity, ClipboardList, AlertTriangle, Banknote } from 'lucide-react';
+import { Users, LayoutList, Calendar, Receipt, Activity, ClipboardList, AlertTriangle, Banknote, ListChecks } from 'lucide-react';
 
 export const AdminDashboard: React.FC = () => {
   const { data: stats } = useQuery({
@@ -141,6 +141,15 @@ export const AdminDashboard: React.FC = () => {
               <div className="flex flex-col items-center gap-2">
                 <Banknote className="h-8 w-8" />
                 <span>Payouts</span>
+              </div>
+            </Button>
+          </Link>
+
+          <Link to={ROUTES.ADMIN_WAITLIST}>
+            <Button className="w-full h-32 text-lg" variant="outline">
+              <div className="flex flex-col items-center gap-2">
+                <ListChecks className="h-8 w-8" />
+                <span>Waitlist</span>
               </div>
             </Button>
           </Link>

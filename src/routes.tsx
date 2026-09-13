@@ -37,6 +37,8 @@ import { BookingManagement } from './pages/admin/BookingManagement';
 import { RefundManagement } from './pages/admin/RefundManagement';
 import { NonReturnReports } from './pages/admin/NonReturnReports';
 import { Payouts } from './pages/admin/Payouts';
+import { WaitlistManagement } from './pages/admin/WaitlistManagement';
+import { Waitlist } from './pages/Waitlist';
 
 export const AppRoutes = () => {
   return (
@@ -53,6 +55,7 @@ export const AppRoutes = () => {
       <Route path={ROUTES.EQUIPMENT_DETAIL} element={<EquipmentDetail />} />
       <Route path={ROUTES.TERMS} element={<TermsOfService />} />
       <Route path={ROUTES.PRIVACY} element={<PrivacyPolicy />} />
+      <Route path={ROUTES.WAITLIST} element={<Waitlist />} />
 
       <Route
         path={ROUTES.EQUIPMENT_BOOK}
@@ -188,6 +191,14 @@ export const AppRoutes = () => {
         element={
           <ProtectedRoute requireAdmin>
             <Payouts />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={ROUTES.ADMIN_WAITLIST}
+        element={
+          <ProtectedRoute requireAdmin>
+            <WaitlistManagement />
           </ProtectedRoute>
         }
       />

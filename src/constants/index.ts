@@ -29,6 +29,8 @@ export const ROUTES = {
   ADMIN_LISTING_APPROVAL: '/admin/listing-approval',
   ADMIN_NON_RETURN_REPORTS: '/admin/non-return-reports',
   ADMIN_PAYOUTS: '/admin/payouts',
+  ADMIN_WAITLIST: '/admin/waitlist',
+  WAITLIST: '/waitlist',
   TERMS: '/terms',
   PRIVACY: '/privacy',
 } as const;
@@ -62,6 +64,14 @@ export const QUERY_KEYS = {
   WISHLIST_IDS: 'wishlist-ids',
   NON_RETURN_REPORTS: 'non-return-reports',
   PAYOUTS: 'payouts',
+  WAITLIST_COUNT: 'waitlist-count',
+  WAITLIST_ENTRIES: 'waitlist-entries',
+} as const;
+
+export const WAITLIST_INTEREST_LABELS = {
+  borrow: 'Borrow',
+  lend: 'Lend',
+  both: 'Borrow & lend',
 } as const;
 
 export const BOOKING_STATUS_LABELS = {

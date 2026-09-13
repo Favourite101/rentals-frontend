@@ -261,6 +261,31 @@ export interface PlatformStats {
   pending_refunds: number;
 }
 
+export type WaitlistInterest = 'borrow' | 'lend' | 'both';
+
+export interface WaitlistSignup {
+  name: string;
+  email: string;
+  interest: WaitlistInterest;
+  location?: string;
+  referral_source?: string;
+}
+
+export interface WaitlistEntry {
+  id: number;
+  name: string;
+  email: string;
+  interest: WaitlistInterest;
+  location?: string | null;
+  referral_source?: string | null;
+  created_at: string;
+}
+
+export interface WaitlistJoinResponse {
+  message: string;
+  position: number;
+}
+
 export interface WishlistItem {
   id: number;
   user_id: number;
