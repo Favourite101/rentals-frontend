@@ -5,16 +5,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/Button';
 import { getCurrentUser, clearAuthData, isAuthenticated, isAdmin } from '@/lib/hooks/useAuth';
 import { notificationsApi } from '@/lib/api/notifications';
-import { ROUTES, QUERY_KEYS } from '@/constants';
+import { ROUTES, QUERY_KEYS, IS_LAUNCHED } from '@/constants';
 import { formatDate } from '@/lib/utils/formatters';
+import { AtloLogo } from './AtloLogo';
 import type { Notification } from '@/types';
-
-const AtloMark: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <svg width="28" height="34" viewBox="0 0 18 22" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-    <path d="M0 22L9 0l9 22H0z" fill="currentColor" />
-    <path d="M5 22l4-9 4 9H5z" fill="white" fillOpacity="0.35" />
-  </svg>
-);
 
 export const Header: React.FC = () => {
   const [userMenuOpen, setUserMenuOpen] = React.useState(false);
@@ -26,6 +20,8 @@ export const Header: React.FC = () => {
   const user = getCurrentUser();
   const authenticated = isAuthenticated();
   const adminUser = isAdmin();
+  // Before launch, visitors only see the logo; signed-in admins keep their menu.
+  const showNav = IS_LAUNCHED || authenticated;
   const dropdownRef = React.useRef<HTMLDivElement>(null);
   const notifRef = React.useRef<HTMLDivElement>(null);
 
@@ -90,20 +86,23 @@ export const Header: React.FC = () => {
         <div className="flex h-16 md:h-20 items-center justify-between gap-4">
 
           {/* Logo */}
-          <Link to={ROUTES.HOME} className="flex items-center gap-2.5 flex-shrink-0 text-primary">
-            <AtloMark />
+          <Link to={ROUTES.HOME} className="flex items-center gap-2.5 flex-shrink-0">
+            <AtloLogo className="h-9 w-9" />
             <span className="text-2xl font-bold text-gray-900 tracking-tight">atlo</span>
           </Link>
 
           {/* Right side */}
+          {showNav && (
           <div className="hidden md:flex items-center gap-5">
             {/* Location pill */}
-            <button className="flex items-center gap-2 text-base text-gray-600 hover:text-gray-900 transition-colors">
-              <MapPin className="h-5 w-5 text-gray-400" />
-              <span className="font-medium">
-                {authenticated && user?.location ? `${user.location}, Lagos` : 'Lagos, Nigeria'}
-              </span>
-            </button>
+            {IS_LAUNCHED && (
+              <button className="flex items-center gap-2 text-base text-gray-600 hover:text-gray-900 transition-colors">
+                <MapPin className="h-5 w-5 text-gray-400" />
+                <span className="font-medium">
+                  {authenticated && user?.location ? `${user.location}, Lagos` : 'Lagos, Nigeria'}
+                </span>
+              </button>
+            )}
 
             {authenticated ? (
               <>
@@ -221,18 +220,21 @@ export const Header: React.FC = () => {
               </div>
             )}
           </div>
+          )}
 
           {/* Mobile toggle */}
-          <button
-            className="md:hidden p-2.5 rounded-lg hover:bg-gray-100 text-gray-600"
-            onClick={() => setMobileMenuOpen(v => !v)}
-          >
-            {mobileMenuOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
-          </button>
+          {showNav && (
+            <button
+              className="md:hidden p-2.5 rounded-lg hover:bg-gray-100 text-gray-600"
+              onClick={() => setMobileMenuOpen(v => !v)}
+            >
+              {mobileMenuOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
+            </button>
+          )}
         </div>
 
         {/* Mobile menu */}
-        {mobileMenuOpen && (
+        {showNav && mobileMenuOpen && (
           <div className="md:hidden border-t border-gray-100 py-3 space-y-1">
             {authenticated ? (
               <>

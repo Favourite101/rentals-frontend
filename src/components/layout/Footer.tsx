@@ -1,14 +1,8 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { Twitter, Instagram, Facebook } from 'lucide-react';
-import { ROUTES } from '@/constants';
-
-const LogoMark: React.FC = () => (
-  <svg width="14" height="18" viewBox="0 0 18 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M0 22L9 0l9 22H0z" fill="currentColor" />
-    <path d="M5 22l4-9 4 9H5z" fill="white" fillOpacity="0.35" />
-  </svg>
-);
+import { ROUTES, IS_LAUNCHED } from '@/constants';
+import { AtloLogo } from './AtloLogo';
 
 export const Footer: React.FC = () => {
   return (
@@ -20,8 +14,8 @@ export const Footer: React.FC = () => {
 
           {/* Brand */}
           <div className="col-span-2 space-y-4">
-            <Link to={ROUTES.HOME} className="flex items-center gap-2 text-primary">
-              <LogoMark />
+            <Link to={ROUTES.HOME} className="flex items-center gap-2">
+              <AtloLogo className="h-6 w-6" />
               <span className="text-[16px] font-semibold text-gray-900 tracking-tight">atlo</span>
             </Link>
             <p className="text-sm text-gray-500 leading-relaxed max-w-[220px]">
@@ -40,13 +34,14 @@ export const Footer: React.FC = () => {
             </div>
           </div>
 
+          {/* Link columns point at pages that don't exist until launch */}
+          {IS_LAUNCHED && (<>
           {/* Product */}
           <div>
             <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-gray-900">Product</h3>
             <ul className="space-y-3">
               <FooterLink to={ROUTES.EQUIPMENT} label="Categories" />
               <FooterLink to={ROUTES.EQUIPMENT} label="Browse items" />
-              <FooterLink to={ROUTES.WAITLIST} label="Join the waitlist" />
               <FooterLink to={ROUTES.HOME} label="For business" />
               <FooterLink to={ROUTES.HOME} label="Community" />
             </ul>
@@ -83,6 +78,7 @@ export const Footer: React.FC = () => {
               <FooterLink to={ROUTES.HOME} label="Report an issue" />
             </ul>
           </div>
+          </>)}
         </div>
 
         {/* Bottom bar */}

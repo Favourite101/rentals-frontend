@@ -3,6 +3,10 @@
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://rentals-backend-h8jj.onrender.com/api/v1';
 export const PAYSTACK_PUBLIC_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || '';
 
+// Pre-launch mode is the default: only the waitlist landing page, login and admin pages are reachable.
+// Set VITE_LAUNCHED=true (e.g. in Vercel env vars) and redeploy to open the full site.
+export const IS_LAUNCHED = import.meta.env.VITE_LAUNCHED === 'true';
+
 export const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
