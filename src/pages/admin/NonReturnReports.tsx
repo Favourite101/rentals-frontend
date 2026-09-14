@@ -141,7 +141,7 @@ export const NonReturnReports: React.FC = () => {
                                         />
                                         <div>
                                             <p className="text-sm font-medium text-red-700">Forfeit deposit (pay lender)</p>
-                                            <p className="text-xs text-red-500">Equipment not returned — transfer deposit to lender</p>
+                                            <p className="text-xs text-red-500">Equipment not returned: transfer deposit to lender</p>
                                         </div>
                                     </label>
                                 </div>

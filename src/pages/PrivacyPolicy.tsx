@@ -44,10 +44,10 @@ export const PrivacyPolicy: React.FC = () => {
             <h2 className="text-xl font-semibold text-gray-900 mb-3">4. Sharing of Information</h2>
             <p>We do not sell your personal data. We share data only with:</p>
             <ul className="list-disc list-inside space-y-1 mt-2">
-              <li><strong>Paystack</strong> — to process payments and transfers</li>
-              <li><strong>NIMC (via Verified Africa)</strong> — to verify your NIN</li>
-              <li><strong>Cloudinary</strong> — to store and serve images</li>
-              <li><strong>Resend</strong> — to deliver transactional emails</li>
+              <li><strong>Paystack</strong>: to process payments and transfers</li>
+              <li><strong>NIMC (via Verified Africa)</strong>: to verify your NIN</li>
+              <li><strong>Cloudinary</strong>: to store and serve images</li>
+              <li><strong>Resend</strong>: to deliver transactional emails</li>
               <li>Other users as necessary to facilitate a booking (e.g., your name and WhatsApp number shown to the Lender after a confirmed booking)</li>
               <li>Law enforcement or regulators when required by law</li>
             </ul>
@@ -67,7 +67,7 @@ export const PrivacyPolicy: React.FC = () => {
               <li>Request deletion of your account and associated data</li>
               <li>Object to or restrict processing of your data</li>
             </ul>
-            <p className="mt-3">To exercise these rights, contact us at <a href="mailto:privacy@atlo.ng" className="text-primary hover:underline">privacy@atlo.ng</a>.</p>
+            <p className="mt-3">To exercise these rights, contact us at <a href="mailto:privacy@joinatlo.com" className="text-primary hover:underline">privacy@joinatlo.com</a>.</p>
           </section>
 
           <section>
@@ -87,7 +87,7 @@ export const PrivacyPolicy: React.FC = () => {
 
           <section>
             <h2 className="text-xl font-semibold text-gray-900 mb-3">10. Contact</h2>
-            <p>For privacy enquiries, contact us at <a href="mailto:privacy@atlo.ng" className="text-primary hover:underline">privacy@atlo.ng</a>.</p>
+            <p>For privacy enquiries, contact us at <a href="mailto:privacy@joinatlo.com" className="text-primary hover:underline">privacy@joinatlo.com</a>.</p>
           </section>
         </div>
       </div>

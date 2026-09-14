@@ -1,8 +1,8 @@
-# ChurchRent - Project Summary
+# atlo - Project Summary
 
 ## Overview
 
-ChurchRent is a complete, production-ready React application for managing church equipment rentals. It features a modern, clean design with full CRUD operations, authentication, payment processing, and an intuitive admin panel.
+atlo is a complete, production-ready React application for peer-to-peer equipment rentals. It features a modern, clean design with full CRUD operations, authentication, payment processing, and an intuitive admin panel.
 
 ## 🎯 Project Highlights
 
@@ -42,7 +42,7 @@ ChurchRent is a complete, production-ready React application for managing church
 ### Design Features
 
 #### UI/UX
-- 🎨 Modern, church-appropriate design
+- 🎨 Modern, clean design
 - 🎨 Custom color scheme (blue, gold, green)
 - 🎨 Responsive layout (mobile-first)
 - 🎨 Smooth animations and transitions
@@ -61,7 +61,7 @@ ChurchRent is a complete, production-ready React application for managing church
 ## 📁 Project Structure
 
 ```
-church-equipment-rental/
+atlo/
 │
 ├── src/
 │   ├── components/
@@ -345,11 +345,11 @@ This is a complete, production-ready application that can be deployed immediatel
 
 ## 📝 License
 
-This project is provided as-is for use in church equipment rental systems.
+This project is provided as-is for use in atlo.
 
 ---
 
-**Built with ❤️ for churches and ministries**
+**Built with ❤️ for the atlo community**
 
 For questions or support:
 - Check the documentation

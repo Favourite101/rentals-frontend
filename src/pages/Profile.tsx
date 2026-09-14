@@ -175,7 +175,7 @@ export const Profile: React.FC = () => {
         const overlap = [...newNameParts].filter(p => bankNameParts.has(p)).length;
         if (overlap < 2) {
           showToast(
-            'Name updated — but it no longer matches your bank account name. Please re-verify your bank account.',
+            'Name updated, but it no longer matches your bank account name. Please re-verify your bank account.',
             'error',
           );
           return;

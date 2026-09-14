@@ -1,4 +1,4 @@
-﻿import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { screen } from '@testing-library/react';
 import { Route, Routes } from 'react-router-dom';
 import { TermsOfService } from '@/pages/TermsOfService';
@@ -62,8 +62,8 @@ describe('TermsOfService', () => {
 
   it('renders support email link', () => {
     renderTerms();
-    const link = screen.getByRole('link', { name: /support@atlo\.ng/i });
-    expect(link).toHaveAttribute('href', 'mailto:support@atlo.ng');
+    const link = screen.getByRole('link', { name: /support@joinatlo\.com/i });
+    expect(link).toHaveAttribute('href', 'mailto:support@joinatlo.com');
   });
 });
 
@@ -105,9 +105,9 @@ describe('PrivacyPolicy', () => {
 
   it('renders privacy email link', () => {
     renderPrivacy();
-    const links = screen.getAllByRole('link', { name: /privacy@atlo\.ng/i });
+    const links = screen.getAllByRole('link', { name: /privacy@joinatlo\.com/i });
     expect(links.length).toBeGreaterThan(0);
-    expect(links[0]).toHaveAttribute('href', 'mailto:privacy@atlo.ng');
+    expect(links[0]).toHaveAttribute('href', 'mailto:privacy@joinatlo.com');
   });
 });
 

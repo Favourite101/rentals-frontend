@@ -1,0 +1,97 @@
+/* Coming-soon page: rotating 3D ring of rental items + roll-up links */
+
+/* Radius ≈ (card-w / 2) / tan(180° / 12) plus a small gap, so 12 cards sit edge to edge. */
+.atlo-stage {
+  --card-w: 104px;
+  --card-h: 148px;
+  --radius: 215px;
+  perspective: 1400px;
+  /* Front cards scale up under perspective, so leave headroom above and below */
+  height: calc(var(--card-h) * 1.62);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .atlo-stage {
+    --card-w: 140px;
+    --card-h: 200px;
+    --radius: 285px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .atlo-stage {
+    --card-w: 160px;
+    --card-h: 228px;
+    --radius: 325px;
+  }
+}
+
+.atlo-ring {
+  position: relative;
+  width: var(--card-w);
+  height: var(--card-h);
+  transform-style: preserve-3d;
+  animation: atlo-spin 48s linear infinite;
+}
+
+.atlo-card {
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  backface-visibility: hidden;
+  transform: rotateY(var(--angle)) translateZ(var(--radius));
+  box-shadow: 0 24px 48px -24px rgba(17, 12, 46, 0.45);
+  background: #f3f4f6;
+}
+
+.atlo-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+@keyframes atlo-spin {
+  from { transform: rotateX(-4deg) rotateY(0deg); }
+  to { transform: rotateX(-4deg) rotateY(-360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atlo-ring { animation: none; transform: rotateX(-4deg) rotateY(-15deg); }
+}
+
+.atlo-roll {
+  display: inline-block;
+  overflow: hidden;
+  height: 1.25em;
+  line-height: 1.25em;
+  vertical-align: bottom;
+}
+
+.atlo-roll > span {
+  display: block;
+  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.atlo-roll:hover > span,
+.atlo-roll:focus-visible > span {
+  transform: translateY(-100%);
+}
+
+.atlo-rise {
+  animation: atlo-rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes atlo-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atlo-rise { animation: none; }
+}

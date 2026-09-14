@@ -1,9 +1,9 @@
-# Complete File Structure - ChurchRent
+# Complete File Structure - atlo
 
 ## 📁 Project Root Files
 
 ```
-church-equipment-rental/
+atlo/
 ├── .env.example              # Environment variables template
 ├── .gitignore               # Git ignore rules
 ├── index.html               # HTML entry point
@@ -193,7 +193,7 @@ All 14 pages implemented:
 
 The complete project is in:
 ```
-/mnt/user-data/outputs/church-equipment-rental/
+/mnt/user-data/outputs/atlo/
 ```
 
 You can:

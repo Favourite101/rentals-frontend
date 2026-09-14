@@ -1,7 +1,7 @@
 # Handover & Developer Documentation
 
 ## Project Overview
-ChurchRent is a modern React + TypeScript application for managing church equipment rentals. It features user and admin flows, Stripe payments, a robust booking system, and a clean, accessible UI. The codebase is production-ready, fully documented, and follows best practices for maintainability and extensibility.
+atlo is a modern React + TypeScript application for peer-to-peer equipment rentals. It features user and admin flows, Stripe payments, a robust booking system, and a clean, accessible UI. The codebase is production-ready, fully documented, and follows best practices for maintainability and extensibility.
 
 ---
 

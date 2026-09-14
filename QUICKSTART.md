@@ -1,6 +1,6 @@
-# Quick Start Guide - ChurchRent
+# Quick Start Guide - atlo
 
-Get up and running with the ChurchRent equipment rental system in minutes!
+Get up and running with the atlo equipment rental system in minutes!
 
 ## Prerequisites
 
@@ -14,7 +14,7 @@ Before you begin, ensure you have the following installed:
 ### 1. Navigate to the Project Directory
 
 ```bash
-cd church-equipment-rental
+cd atlo
 ```
 
 ### 2. Install Dependencies
@@ -75,7 +75,7 @@ curl -X POST http://localhost:8000/api/v1/auth/register \
   -d '{
     "name": "Admin User",
     "username": "admin",
-    "email": "admin@churchrent.com",
+    "email": "admin@joinatlo.com",
     "password": "admin123",
     "role": "admin"
   }'
@@ -184,7 +184,7 @@ rm -rf node_modules/.vite
 ## Project Structure Overview
 
 ```
-church-equipment-rental/
+atlo/
 ├── src/
 │   ├── components/     # Reusable components
 │   ├── pages/          # Page components
@@ -261,7 +261,7 @@ Before deploying to production:
 
 ---
 
-**Congratulations!** You're now ready to use ChurchRent! 🎉
+**Congratulations!** You're now ready to use atlo! 🎉
 
 For detailed information, consult:
 - `README.md` - Full documentation

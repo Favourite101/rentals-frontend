@@ -7,6 +7,9 @@ export const PAYSTACK_PUBLIC_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || '
 // Set VITE_LAUNCHED=true (e.g. in Vercel env vars) and redeploy to open the full site.
 export const IS_LAUNCHED = import.meta.env.VITE_LAUNCHED === 'true';
 
+// Optional ISO date/time (e.g. 2026-11-01T09:00:00+01:00). When set, the coming-soon page shows a countdown.
+export const LAUNCH_DATE: string | undefined = import.meta.env.VITE_LAUNCH_DATE || undefined;
+
 export const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
@@ -75,7 +78,7 @@ export const QUERY_KEYS = {
 export const WAITLIST_INTEREST_LABELS = {
   borrow: 'Borrow',
   lend: 'Lend',
-  both: 'Borrow & lend',
+  both: 'Borrow & Lend',
 } as const;
 
 export const BOOKING_STATUS_LABELS = {

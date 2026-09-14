@@ -141,8 +141,8 @@ export const WaitlistManagement: React.FC = () => {
                         <td className="py-3 pr-4">
                           <Badge className="bg-primary/10 text-primary">{WAITLIST_INTEREST_LABELS[entry.interest]}</Badge>
                         </td>
-                        <td className="py-3 pr-4 text-gray-600">{entry.location || '—'}</td>
-                        <td className="py-3 pr-4 text-gray-600">{entry.referral_source || '—'}</td>
+                        <td className="py-3 pr-4 text-gray-600">{entry.location || '-'}</td>
+                        <td className="py-3 pr-4 text-gray-600">{entry.referral_source || '-'}</td>
                         <td className="py-3 pr-4 text-gray-500 whitespace-nowrap">{formatDate(entry.created_at)}</td>
                         <td className="py-3 text-right">
                           <Button

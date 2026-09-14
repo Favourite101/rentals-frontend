@@ -57,7 +57,7 @@ export const Login: React.FC = () => {
               <Package className="h-8 w-8 text-primary" />
             </div>
             <h1 className="text-3xl font-bold mb-2">Welcome Back</h1>
-            <p className="text-gray-600">Sign in to your ChurchRent account</p>
+            <p className="text-gray-600">Sign in to your atlo account</p>
           </div>
 
           <Card className="shadow-xl">

@@ -73,7 +73,7 @@ export const TermsOfService: React.FC = () => {
 
           <section>
             <h2 className="text-xl font-semibold text-gray-900 mb-3">12. Contact</h2>
-            <p>If you have any questions about these Terms, please contact us at <a href="mailto:support@atlo.ng" className="text-primary hover:underline">support@atlo.ng</a>.</p>
+            <p>If you have any questions about these Terms, please contact us at <a href="mailto:support@joinatlo.com" className="text-primary hover:underline">support@joinatlo.com</a>.</p>
           </section>
         </div>
       </div>

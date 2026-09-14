@@ -88,7 +88,7 @@ export const Payouts: React.FC = () => {
                                                     {formatCurrency(booking.lender_payout_amount ?? 0)}
                                                 </td>
                                                 <td className="py-3 px-4 text-xs text-gray-400 font-mono">
-                                                    {booking.payout_reference ?? '—'}
+                                                    {booking.payout_reference ?? '-'}
                                                 </td>
                                             </tr>
                                         ))}

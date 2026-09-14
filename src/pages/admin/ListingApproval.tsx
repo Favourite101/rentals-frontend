@@ -78,7 +78,7 @@ export const ListingApproval: React.FC = () => {
                         ) : pendingListings.length === 0 ? (
                             <div className="text-center py-12">
                                 <CheckCircle className="h-12 w-12 text-emerald-400 mx-auto mb-3" />
-                                <p className="text-gray-500">All caught up — no listings pending review.</p>
+                                <p className="text-gray-500">All caught up. No listings pending review.</p>
                             </div>
                         ) : (
                             <div className="overflow-x-auto">

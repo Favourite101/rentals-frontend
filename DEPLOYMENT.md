@@ -1,6 +1,6 @@
-# Deployment Guide - ChurchRent
+# Deployment Guide - atlo
 
-This guide covers deploying the ChurchRent frontend application to various hosting platforms.
+This guide covers deploying the atlo frontend application to various hosting platforms.
 
 ## Pre-Deployment Checklist
 
@@ -75,19 +75,19 @@ VITE_STRIPE_PUBLISHABLE_KEY=pk_live_your_key_here
 
 2. **Create S3 Bucket**
    ```bash
-   aws s3 mb s3://churchrent-frontend
+   aws s3 mb s3://atlo-frontend
    ```
 
 3. **Configure for Static Website Hosting**
    ```bash
-   aws s3 website s3://churchrent-frontend \
+   aws s3 website s3://atlo-frontend \
      --index-document index.html \
      --error-document index.html
    ```
 
 4. **Upload Build Files**
    ```bash
-   aws s3 sync dist/ s3://churchrent-frontend --delete
+   aws s3 sync dist/ s3://atlo-frontend --delete
    ```
 
 5. **Set Up CloudFront Distribution**
@@ -110,7 +110,7 @@ VITE_STRIPE_PUBLISHABLE_KEY=pk_live_your_key_here
        "predeploy": "npm run build",
        "deploy": "gh-pages -d dist"
      },
-     "homepage": "https://yourusername.github.io/churchrent"
+     "homepage": "https://yourusername.github.io/atlo"
    }
    ```
 

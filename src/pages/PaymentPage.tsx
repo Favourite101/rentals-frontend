@@ -72,7 +72,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({ booking }) => {
         <div className="border-t pt-4 space-y-2">
           <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
             <Calendar className="h-4 w-4" />
-            <span>{formatDate(booking.start_date)} — {formatDate(booking.end_date)}</span>
+            <span>{formatDate(booking.start_date)} to {formatDate(booking.end_date)}</span>
           </div>
 
           <div className="flex justify-between items-center text-sm">

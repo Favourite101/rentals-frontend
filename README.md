@@ -1,6 +1,6 @@
-# ChurchRent - Equipment Rental System
+# atlo - Peer-to-Peer Rental Platform
 
-A modern, production-ready React application for managing church equipment rentals with an intuitive interface, real-time availability, and secure payment processing via Stripe.
+A modern, production-ready React application for peer-to-peer equipment rentals with an intuitive interface, real-time availability, and secure payment processing via Stripe.
 
 ## Features
 
@@ -43,7 +43,7 @@ A modern, production-ready React application for managing church equipment renta
 ### 1. Clone the repository
 ```bash
 git clone <repository-url>
-cd church-equipment-rental
+cd atlo
 ```
 
 ### 2. Install dependencies
@@ -240,7 +240,7 @@ This project is licensed under the MIT License.
 ## Support
 
 For support or questions, contact:
-- Email: support@churchrent.com
+- Email: support@joinatlo.com
 - Phone: +44 20 1234 5678
 
 ## Acknowledgments
@@ -257,7 +257,7 @@ For support or questions, contact:
 # Handover & Developer Guide
 
 ## Project Overview
-ChurchRent is a modern React + TypeScript application for managing church equipment rentals. It features user and admin flows, Stripe payments, a robust booking system, and a clean, accessible UI. The codebase is production-ready, fully documented, and follows best practices for maintainability and extensibility.
+atlo is a modern React + TypeScript application for peer-to-peer equipment rentals. It features user and admin flows, Stripe payments, a robust booking system, and a clean, accessible UI. The codebase is production-ready, fully documented, and follows best practices for maintainability and extensibility.
 
 ---
 

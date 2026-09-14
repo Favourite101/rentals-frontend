@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Acceptance tests: Authentication user journeys.
  *
  * These tests simulate what a real user would do:
@@ -57,7 +57,7 @@ describe('Acceptance: Login journey', () => {
       http.get(`${BASE}/auth/me`, () =>
         HttpResponse.json({
           id: 99, name: 'Admin', username: 'admin',
-          email: 'admin@atlo.ng', role: 'admin', created_at: '2025-01-01T00:00:00Z',
+          email: 'admin@joinatlo.com', role: 'admin', created_at: '2025-01-01T00:00:00Z',
         })
       )
     );
